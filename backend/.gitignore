@@ -1,0 +1,6 @@
+target/
+.env
+!.env.example
+
+# Maven wrapper: keep mvnw + .mvn/wrapper/maven-wrapper.properties committed.
+!.mvn/wrapper/maven-wrapper.properties
