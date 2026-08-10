@@ -1,0 +1,28 @@
+# Render Blueprint — deploys the Spring Boot backend from its Dockerfile.
+# In the Render dashboard: New > Blueprint, point it at this repo. Secrets are marked
+# sync:false so Render prompts you to fill them in (nothing sensitive is committed).
+services:
+  - type: web
+    name: jobmatch-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    # Render pings this to gate deploys; it's also the keep-warm target for the free tier.
+    healthCheckPath: /actuator/health
+    envVars:
+      # JWT signing secret — MUST be >= 32 bytes or the app fails fast at startup.
+      # Generate one with:  openssl rand -base64 48
+      - key: JWT_SECRET
+        sync: false
+      # Supabase connection (use the SESSION pooler; see DEPLOYMENT.md for the exact format).
+      # Example URL: jdbc:postgresql://aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USER      # e.g. postgres.<project-ref>
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      # Comma-separated allowed origins — set to your Vercel URL once the frontend is deployed.
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false

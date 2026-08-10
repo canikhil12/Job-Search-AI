@@ -23,6 +23,16 @@
 - [x] Integration tests: Testcontainers register→login→/me, dup 409, wrong-pw 401, no-token 401
 - [ ] **Verification pass** (needs Docker running): `docker compose up`, `mvnw verify`, run + curl, UI flow, `docker build`
 
+### Phase 1 deployment (Supabase + Render + Vercel) — see DEPLOYMENT.md
+- [x] Frontend API base URL made env-configurable (`VITE_API_BASE_URL`) + `frontend/.env.example`
+- [x] Backend binds `$PORT`; Hikari pool sized for managed Postgres
+- [x] `render.yaml` blueprint (Docker, health check, secrets as `sync:false`)
+- [x] `DEPLOYMENT.md` runbook (Supabase session pooler, Render, Vercel, CORS wiring, troubleshooting)
+- [ ] Supabase project created + `vector` extension enabled
+- [ ] Backend live on Render (env vars set, Flyway migration applied, `/actuator/health` UP)
+- [ ] Frontend live on Vercel (`VITE_API_BASE_URL` → Render URL)
+- [ ] `CORS_ALLOWED_ORIGINS` set to the Vercel URL; end-to-end register/login verified
+
 ## Phase 2 — Resume Upload + Parse
 - [ ] File upload endpoint, storage, PDF/DOCX text extraction, parsed-resume persistence
 

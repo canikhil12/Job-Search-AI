@@ -5,6 +5,12 @@ spring:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/jobmatch}
     username: ${DATABASE_USER:jobmatch}
     password: ${DATABASE_PASSWORD:jobmatch}
+    hikari:
+      # Kept small on purpose: managed Postgres (Supabase) has tight connection limits,
+      # and behind the Supavisor session pooler a large local pool buys nothing.
+      maximum-pool-size: ${DB_POOL_SIZE:5}
+      # Fail fast at startup if the DB is unreachable, rather than hanging requests.
+      connection-timeout: 10000
   jpa:
     hibernate:
       ddl-auto: validate
@@ -36,4 +42,5 @@ management:
       show-details: never
 
 server:
-  port: 8080
+  # Render (and most PaaS hosts) inject the port to bind via $PORT; default to 8080 locally.
+  port: ${PORT:8080}

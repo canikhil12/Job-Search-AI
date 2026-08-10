@@ -2,6 +2,11 @@ import type { ApiError } from './types'
 
 const TOKEN_KEY = 'jobmatch.token'
 
+// Base URL for the API. Empty in local dev so requests go through the Vite proxy
+// (same-origin). In production (Vercel) this is set to the backend's URL (Render),
+// making requests cross-origin — which is exactly what the backend CORS config allows.
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
+
 // Token is held in memory and mirrored to localStorage so a refresh keeps the session.
 let inMemoryToken: string | null = localStorage.getItem(TOKEN_KEY)
 
@@ -53,7 +58,7 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     headers.set('Authorization', `Bearer ${token}`)
   }
 
-  const response = await fetch(path, { ...options, headers })
+  const response = await fetch(`${API_BASE}${path}`, { ...options, headers })
 
   if (response.status === 401) {
     onUnauthorized?.()
