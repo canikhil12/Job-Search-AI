@@ -1,5 +1,13 @@
 # JobMatch AI
 
+[![Java](https://img.shields.io/badge/Java-21-007396?logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/21/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.5-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%20+%20pgvector-4169E1?logo=postgresql&logoColor=white)](https://github.com/pgvector/pgvector)
+[![Status](https://img.shields.io/badge/status-Phase%201-yellow)](./TRACKER.md)
+
 An AI-powered resume & job-match platform (portfolio project). This repo is being built in
 phases — see [`TRACKER.md`](./TRACKER.md) for status and [`DECISIONS.md`](./DECISIONS.md) for
 the reasoning behind non-obvious choices.
