@@ -3,7 +3,7 @@
 > **Every session starts by reading this file.** It is the source of truth for what is
 > done and what is next. Check items off as they land; keep the current phase at the top of mind.
 
-## Phase 1 — Scaffold + Auth  ← _in progress_
+## Phase 1 — Scaffold + Auth  ✅ _complete + deployed_
 - [x] Monorepo layout (`backend/`, `frontend/`, root compose + docs)
 - [x] Dockerized Postgres 16 (`pgvector/pgvector:pg16`) via `docker-compose.yml`
 - [x] Flyway `V1__init.sql`: enable `vector` extension, create `users` table
@@ -28,10 +28,15 @@
 - [x] Backend binds `$PORT`; Hikari pool sized for managed Postgres
 - [x] `render.yaml` blueprint (Docker, health check, secrets as `sync:false`)
 - [x] `DEPLOYMENT.md` runbook (Supabase session pooler, Render, Vercel, CORS wiring, troubleshooting)
-- [ ] Supabase project created + `vector` extension enabled
-- [ ] Backend live on Render (env vars set, Flyway migration applied, `/actuator/health` UP)
-- [ ] Frontend live on Vercel (`VITE_API_BASE_URL` → Render URL)
-- [ ] `CORS_ALLOWED_ORIGINS` set to the Vercel URL; end-to-end register/login verified
+- [x] Supabase project created + `vector` extension enabled (ca-central-1, session pooler)
+- [x] Backend live on Render (`https://jobmatch-backend-wxjw.onrender.com`, Flyway V1 applied, register/login/me verified)
+- [x] Frontend live on Vercel (`https://job-search-ai-green.vercel.app`, `VITE_API_BASE_URL` → Render URL)
+- [x] `CORS_ALLOWED_ORIGINS` set to the Vercel URL; preflight + credentials verified via curl
+
+**Phase 1 COMPLETE — deployed end-to-end (Vercel + Render + Supabase).**
+Live URLs:
+- Frontend: https://job-search-ai-green.vercel.app
+- Backend:  https://jobmatch-backend-wxjw.onrender.com  (health: `/actuator/health`)
 
 ## Phase 2 — Resume Upload + Parse
 - [ ] File upload endpoint, storage, PDF/DOCX text extraction, parsed-resume persistence
