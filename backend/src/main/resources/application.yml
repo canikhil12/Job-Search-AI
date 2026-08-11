@@ -21,7 +21,13 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
-    baseline-on-migrate: false
+    # Supabase's "public" schema is not empty on a fresh project (enabling the pgvector
+    # extension adds objects there). Flyway refuses its first run against a non-empty schema
+    # unless told to baseline. Baseline at version 0 — NOT the default 1, which would mark V1
+    # as already-applied and skip creating the users table — so V1 (version 1 > 0) still runs.
+    # On a truly empty schema (local Docker) this is a no-op and V1 runs normally.
+    baseline-on-migrate: true
+    baseline-version: 0
 
 # JWT signing secret. Must be >= 32 bytes (256 bits) for HS256; the app fails fast otherwise.
 jwt:
