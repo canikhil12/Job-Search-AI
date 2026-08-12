@@ -38,8 +38,18 @@ Live URLs:
 - Frontend: https://job-search-ai-green.vercel.app
 - Backend:  https://jobmatch-backend-wxjw.onrender.com  (health: `/actuator/health`)
 
-## Phase 2 — Resume Upload + Parse
-- [ ] File upload endpoint, storage, PDF/DOCX text extraction, parsed-resume persistence
+## Phase 2 — Resume Upload + Parse  ← _backend in progress_
+- [x] `resume/` feature package (controller, service, entity, repository, DTOs)
+- [x] `V2__resumes.sql` migration (resumes table, FK → users, index on user_id)
+- [x] Storage abstraction: `ResumeStorage` port + `SupabaseResumeStorage` (prod) / `InMemoryResumeStorage` (dev/tests), selected via `resume.storage.provider`
+- [x] Text extraction with Apache Tika (`ResumeTextExtractor`, PDF + DOCX)
+- [x] Endpoints (all JWT-protected, ownership-scoped): POST upload, GET list, GET one, GET download, DELETE
+- [x] Multipart size limit (5MB) + new error mappings (415/422/413/502) in GlobalExceptionHandler
+- [x] Unit tests: `ResumeServiceTest` (validation, ownership, orchestration) — 5 green
+- [x] Integration test: `ResumeIntegrationTest` (Testcontainers, real PDF via PDFBox) — needs Docker to run
+- [ ] Supabase Storage bucket `resumes` created + `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`/`RESUME_STORAGE_PROVIDER=supabase` set on Render
+- [ ] `mvnw verify` green with Docker (runs the resume integration test)
+- [ ] Frontend: upload page + resume list (deferred — backend-first)
 
 ## Phase 3 — Job Ingest + Embeddings
 - [ ] Job ingestion pipeline, embedding generation, pgvector storage

@@ -8,7 +8,9 @@ services:
       POSTGRES_USER: jobmatch
       POSTGRES_PASSWORD: jobmatch
     ports:
-      - "5432:5432"
+      # Host port is overridable via JOBMATCH_DB_PORT (root .env) for machines that
+      # already run Postgres on 5432. Container port stays 5432.
+      - "${JOBMATCH_DB_PORT:-5432}:5432"
     volumes:
       - jobmatch_pgdata:/var/lib/postgresql/data
     healthcheck:

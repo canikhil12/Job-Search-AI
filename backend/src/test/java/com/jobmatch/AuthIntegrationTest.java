@@ -1,8 +1,10 @@
 package com.jobmatch;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -42,6 +44,18 @@ class AuthIntegrationTest {
 
     @Autowired
     private TestRestTemplate rest;
+
+    /**
+     * TestRestTemplate defaults to JDK {@code HttpURLConnection}, which throws
+     * {@code HttpRetryException("cannot retry due to server authentication")} when a 401 comes
+     * back on a POST whose body was streamed — it tries to re-authenticate and cannot rewind the
+     * body. That masks the perfectly valid 401 from the login endpoint. {@code java.net.http}
+     * has no such behaviour, so use it instead.
+     */
+    @BeforeEach
+    void useJdkHttpClient() {
+        rest.getRestTemplate().setRequestFactory(new JdkClientHttpRequestFactory());
+    }
 
     @Test
     void registerThenLoginThenMe_happyPath() {
