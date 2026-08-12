@@ -47,9 +47,13 @@ Live URLs:
 - [x] Multipart size limit (5MB) + new error mappings (415/422/413/502) in GlobalExceptionHandler
 - [x] Unit tests: `ResumeServiceTest` (validation, ownership, orchestration) — 5 green
 - [x] Integration test: `ResumeIntegrationTest` (Testcontainers, real PDF via PDFBox) — needs Docker to run
-- [ ] Supabase Storage bucket `resumes` created + `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`/`RESUME_STORAGE_PROVIDER=supabase` set on Render
+- [x] Supabase Storage bucket `resumes` created + `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`/`RESUME_STORAGE_PROVIDER=supabase` set on Render
+- [x] **Live verified in prod:** upload → Tika extract → Supabase Storage → download (byte-perfect) → delete
 - [ ] `mvnw verify` green with Docker (runs the resume integration test)
 - [ ] Frontend: upload page + resume list (deferred — backend-first)
+
+Note: Supabase migrated to new API keys — the backend uses the **Secret key** (`sb_secret_…`,
+the modern `service_role`) in `SUPABASE_SERVICE_ROLE_KEY`, sent as both `Authorization: Bearer` and `apikey`.
 
 ## Phase 3 — Job Ingest + Embeddings
 - [ ] Job ingestion pipeline, embedding generation, pgvector storage
