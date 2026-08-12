@@ -16,3 +16,15 @@ export interface ApiError {
   message: string
   fieldErrors?: Record<string, string>
 }
+
+export interface Resume {
+  id: string
+  fileName: string
+  contentType: string
+  sizeBytes: number
+  createdAt: string
+}
+
+export interface ResumeDetail extends Resume {
+  extractedText: string
+}

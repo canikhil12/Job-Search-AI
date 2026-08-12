@@ -50,31 +50,50 @@ export function setUnauthorizedHandler(handler: (() => void) | null): void {
   onUnauthorized = handler
 }
 
-export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const headers = new Headers(options.headers)
-  headers.set('Content-Type', 'application/json')
+function authHeader(base?: HeadersInit): Headers {
+  const headers = new Headers(base)
   const token = getToken()
   if (token) {
     headers.set('Authorization', `Bearer ${token}`)
   }
+  return headers
+}
 
-  const response = await fetch(`${API_BASE}${path}`, { ...options, headers })
-
+async function handleResponse<T>(response: Response): Promise<T> {
   if (response.status === 401) {
     onUnauthorized?.()
     throw new UnauthorizedError()
   }
-
   if (!response.ok) {
     const body = (await response.json().catch(() => null)) as ApiError | null
     throw new ApiRequestError(
       body ?? { timestamp: new Date().toISOString(), status: response.status, message: 'Request failed' },
     )
   }
-
   // 204 No Content -> nothing to parse.
   if (response.status === 204) {
     return undefined as T
   }
   return (await response.json()) as T
+}
+
+/** JSON request with the auth header attached. */
+export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const headers = authHeader(options.headers)
+  headers.set('Content-Type', 'application/json')
+  const response = await fetch(`${API_BASE}${path}`, { ...options, headers })
+  return handleResponse<T>(response)
+}
+
+/**
+ * Multipart upload. Deliberately does NOT set Content-Type — the browser sets it,
+ * including the multipart boundary, which a manual header would clobber.
+ */
+export async function apiUpload<T>(path: string, formData: FormData): Promise<T> {
+  const response = await fetch(`${API_BASE}${path}`, {
+    method: 'POST',
+    headers: authHeader(),
+    body: formData,
+  })
+  return handleResponse<T>(response)
 }
