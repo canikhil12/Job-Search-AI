@@ -54,15 +54,15 @@ supabase:
   storage:
     bucket: ${SUPABASE_STORAGE_BUCKET:resumes}
 
-# Embeddings. Default "fake" (deterministic, no key — for local/tests); set to "openai" in prod.
+# Embeddings. Default "fake" (deterministic, no key — for local/tests); set to "openai" in prod
+# for any OpenAI-compatible endpoint (OpenAI directly, or a gateway like OpenRouter).
 # dimension must match the DB column: jobs.embedding is vector(1536) = text-embedding-3-small.
 embedding:
   provider: ${EMBEDDING_PROVIDER:fake}
   dimension: 1536
-  openai:
-    api-key: ${OPENAI_API_KEY:}
-    base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
-    model: ${OPENAI_EMBEDDING_MODEL:text-embedding-3-small}
+  api-key: ${EMBEDDING_API_KEY:}
+  base-url: ${EMBEDDING_BASE_URL:https://api.openai.com/v1}
+  model: ${EMBEDDING_MODEL:text-embedding-3-small}
 
 # Seed the jobs table with bundled real postings on first startup (no-op once populated).
 jobs:

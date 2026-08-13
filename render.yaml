@@ -33,8 +33,12 @@ services:
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY # Supabase secret key (sb_secret_...); backend-only
         sync: false
-      # --- Phase 3: embeddings (OpenAI) ---
+      # --- Phase 3: embeddings (any OpenAI-compatible endpoint: OpenAI or OpenRouter) ---
       - key: EMBEDDING_PROVIDER        # set to: openai
         sync: false
-      - key: OPENAI_API_KEY            # OpenAI API key for text-embedding-3-small
+      - key: EMBEDDING_API_KEY         # OpenAI key (sk-...) or OpenRouter key (sk-or-...)
+        sync: false
+      - key: EMBEDDING_BASE_URL        # OpenAI: https://api.openai.com/v1  | OpenRouter: https://openrouter.ai/api/v1
+        sync: false
+      - key: EMBEDDING_MODEL           # OpenAI: text-embedding-3-small  | OpenRouter: openai/text-embedding-3-small
         sync: false
