@@ -1,5 +1,6 @@
 package com.jobmatch.common;
 
+import com.jobmatch.embedding.EmbeddingException;
 import com.jobmatch.resume.UnsupportedFileTypeException;
 import com.jobmatch.resume.parse.ResumeParseException;
 import com.jobmatch.resume.storage.StorageException;
@@ -72,6 +73,13 @@ public class GlobalExceptionHandler {
         // Upstream (object storage) failure — don't leak details.
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
                 .body(ApiError.of(HttpStatus.BAD_GATEWAY.value(), "File storage is temporarily unavailable"));
+    }
+
+    @ExceptionHandler(EmbeddingException.class)
+    public ResponseEntity<ApiError> handleEmbedding(EmbeddingException ex) {
+        // Upstream (embeddings provider) failure — don't leak details.
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body(ApiError.of(HttpStatus.BAD_GATEWAY.value(), "Embedding service is temporarily unavailable"));
     }
 
     @ExceptionHandler(Exception.class)

@@ -56,8 +56,17 @@ Live URLs:
 Note: Supabase migrated to new API keys — the backend uses the **Secret key** (`sb_secret_…`,
 the modern `service_role`) in `SUPABASE_SERVICE_ROLE_KEY`, sent as both `Authorization: Bearer` and `apikey`.
 
-## Phase 3 — Job Ingest + Embeddings
-- [ ] Job ingestion pipeline, embedding generation, pgvector storage
+## Phase 3 — Job Ingest + Embeddings  ← _backend built, tests green; needs OpenAI key on Render_
+- [x] `V3__jobs.sql` — jobs table with `embedding vector(1536)` + HNSW cosine index
+- [x] `embedding/` capability: `EmbeddingClient` port + `OpenAiEmbeddingClient` (prod) / `FakeEmbeddingClient` (tests/local), selected via `embedding.provider`
+- [x] `job/` feature package: entity, JPA read repo, `JobVectorRepository` (JdbcTemplate vector insert), service, controller
+- [x] Endpoints (JWT-protected): POST /api/jobs (ingest+embed), GET list, GET /{id}
+- [x] `JobSeeder` — seeds 5 real Indeed postings on first startup, embedded through the active provider
+- [x] Tests: FakeEmbeddingClientTest (4), JobServiceTest (2), JobIntegrationTest (3, verifies 1536-dim vector in pgvector) — full suite 27/27 green
+- [x] Fixed a flaky Phase 1 test (JwtServiceTest tampered-token: flip first sig char, not last)
+- [ ] Set `EMBEDDING_PROVIDER=openai` + `OPENAI_API_KEY` on Render; redeploy → seeder embeds jobs via OpenAI
+- [ ] Verify live: POST a job + list against the deployed backend
+- [ ] Frontend: jobs list view (deferred — comes together with Phase 4 match UI)
 
 ## Phase 4 — Semantic Match
 - [ ] Vector similarity search, resume↔job scoring, ranked results

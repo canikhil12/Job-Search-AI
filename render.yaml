@@ -26,3 +26,15 @@ services:
       # Comma-separated allowed origins — set to your Vercel URL once the frontend is deployed.
       - key: CORS_ALLOWED_ORIGINS
         sync: false
+      # --- Phase 2: resume file storage (Supabase Storage) ---
+      - key: RESUME_STORAGE_PROVIDER   # set to: supabase
+        sync: false
+      - key: SUPABASE_URL              # e.g. https://<project-ref>.supabase.co
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY # Supabase secret key (sb_secret_...); backend-only
+        sync: false
+      # --- Phase 3: embeddings (OpenAI) ---
+      - key: EMBEDDING_PROVIDER        # set to: openai
+        sync: false
+      - key: OPENAI_API_KEY            # OpenAI API key for text-embedding-3-small
+        sync: false

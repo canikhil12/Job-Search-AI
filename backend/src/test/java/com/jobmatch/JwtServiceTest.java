@@ -50,9 +50,12 @@ class JwtServiceTest {
     @Test
     void rejectsTamperedToken() {
         String token = jwtService.issueToken("subject").token();
-        // Flip the last character of the signature.
-        char last = token.charAt(token.length() - 1);
-        String tampered = token.substring(0, token.length() - 1) + (last == 'A' ? 'B' : 'A');
+        // Flip the FIRST character of the signature. (The LAST base64url char of an HS512
+        // signature encodes mostly padding bits, so flipping it can leave the decoded signature
+        // — and thus validity — unchanged; the first char is always fully significant.)
+        int sig = token.lastIndexOf('.') + 1;
+        char first = token.charAt(sig);
+        String tampered = token.substring(0, sig) + (first == 'A' ? 'B' : 'A') + token.substring(sig + 1);
 
         assertThatThrownBy(() -> jwtService.extractSubject(tampered))
                 .isInstanceOf(JwtException.class);

@@ -1,0 +1,37 @@
+[
+  {
+    "title": "Senior Backend Engineer",
+    "company": "flexEngage",
+    "location": "Remote (US)",
+    "sourceUrl": "https://to.indeed.com/aachs9kbs4vh",
+    "description": "flexEngage builds personalized transactional communications for major retailers (Under Armour, Michael Kors, GNC). Seeking a Senior Backend Engineer to develop features in a secure, well-tested, and performant way, collaborate with Product and Frontend/Data Engineering, and solve technical problems of moderate scope and complexity. Required: 3+ years backend development; professional experience with Kotlin (preferred) or Java; Spring and Spring Boot frameworks; SQL (MySQL) and NoSQL databases (DynamoDB); automated testing (unit, integration, end-to-end); microservices architecture on Kubernetes; AWS with Infrastructure as Code (Terraform); CI/CD tools like Bitbucket Pipelines or Jenkins."
+  },
+  {
+    "title": "Java Angular Full Stack Engineer",
+    "company": "Stellar Solutions",
+    "location": "Remote (US)",
+    "sourceUrl": "https://to.indeed.com/aavg8jqzmcnr",
+    "description": "Senior/Lead Full Stack Engineer with strong Java backend and Angular front-end skills. Responsibilities: develop full stack applications (Java backend, Angular front end); lead and mentor junior developers; build and maintain solutions leveraging AWS, Kafka, and Postgres; use GitLab for CI/CD workflows; collaborate in SAFe Agile ceremonies and delivery. Qualifications: strong Java and Angular experience; proven SAFe Agile experience; GitLab expertise; GraphQL experience; AWS, Kafka, and Postgres experience required."
+  },
+  {
+    "title": "Scala Akka SME Backend Engineer",
+    "company": "Formac Inc",
+    "location": "Remote (US)",
+    "sourceUrl": "https://to.indeed.com/aakygsjz7wnf",
+    "description": "Backend engineer with 5+ years of software development using Java 8+ and 2+ years of Scala. 2+ years of Akka technologies such as Streams, Actors, HTTP, Persistence. Experience designing well-defined Spring Boot RESTful APIs and high-availability, reliable solutions at scale. Architectural patterns such as MVC, Microservices, and Event-driven. CI/CD with Azure DevOps or Jenkins. AWS technologies including API Gateway, ALB/NLB, Fargate, Lambda, S3, CloudWatch, IAM, CloudFormation. Relational and NoSQL databases such as PostgreSQL and DynamoDB. Agile (Scrum) delivery."
+  },
+  {
+    "title": "Senior AI / Full-Stack Engineer",
+    "company": "NIAIS",
+    "location": "Remote (US)",
+    "sourceUrl": "https://to.indeed.com/aacz6fqrrywv",
+    "description": "Senior Full-Stack Engineer with a strong backend orientation to lead development of modern cloud-based systems and AI-powered tools. Architect resilient backend services and RESTful/GraphQL APIs using Python, Node.js, or Java. Develop intuitive frontend interfaces using React and Next.js. Manage database schema design, indexing, and query optimization (PostgreSQL and MongoDB). Deploy and scale microservices using Docker, Kubernetes, and cloud providers (AWS/Azure/GCP). Incorporate AI/LLM features (OpenAI, vector databases, ML pipelines). 5+ years of senior software engineering experience."
+  },
+  {
+    "title": "Staff Data Engineer",
+    "company": "Cribl",
+    "location": "Remote (US)",
+    "sourceUrl": "https://to.indeed.com/aagr6xgyjysc",
+    "description": "Staff Data Engineer serving as technical lead for Cribl's Data Engineering team, owning architecture for the systems that power analytics, data science, and operational decision-making. Deep expertise in Snowflake: advanced data modeling, query and warehouse performance tuning, cost management, and RBAC design. Strong Python and SQL fundamentals with solid ELT patterns. Operate self-hosted orchestration (Prefect preferred; Airflow/Dagster acceptable). Hands-on AWS and infrastructure-as-code with Terraform. Build cloud applications and backend services: APIs, ingestion services, event-driven workflows. Advance the dbt practice. Production-grade engineering: logging, alerting, versioning, CI/CD. Mentor junior and mid-level data engineers."
+  }
+]
