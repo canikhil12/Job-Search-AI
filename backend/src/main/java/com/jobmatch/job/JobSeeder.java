@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatch.job.dto.CreateJobRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -27,14 +28,25 @@ public class JobSeeder {
 
     private final JobService jobService;
     private final ObjectMapper objectMapper;
+    private final String embeddingProvider;
 
-    public JobSeeder(JobService jobService, ObjectMapper objectMapper) {
+    public JobSeeder(JobService jobService,
+                     ObjectMapper objectMapper,
+                     @Value("${embedding.provider:fake}") String embeddingProvider) {
         this.jobService = jobService;
         this.objectMapper = objectMapper;
+        this.embeddingProvider = embeddingProvider;
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void seed() {
+        // Only seed with a real embedding provider — seeding under the deterministic fake would
+        // fill the table with meaningless vectors, and "seed only if empty" would then never let
+        // the real provider re-embed them.
+        if ("fake".equalsIgnoreCase(embeddingProvider)) {
+            log.info("Embedding provider is 'fake'; skipping job seed (set EMBEDDING_PROVIDER to seed).");
+            return;
+        }
         if (jobService.count() > 0) {
             log.info("Jobs already present ({}), skipping seed.", jobService.count());
             return;
