@@ -50,7 +50,8 @@ Live URLs:
 - [x] Supabase Storage bucket `resumes` created + `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`/`RESUME_STORAGE_PROVIDER=supabase` set on Render
 - [x] **Live verified in prod:** upload → Tika extract → Supabase Storage → download (byte-perfect) → delete
 - [ ] `mvnw verify` green with Docker (runs the resume integration test)
-- [ ] Frontend: upload page + resume list (deferred — backend-first)
+- [x] Frontend: resume upload UI on dashboard (upload, view extracted text, list, delete) — live-verified in browser
+- [x] `frontend/vercel.json` SPA rewrite (fixes deep-link 404 on hard refresh of sub-routes)
 
 Note: Supabase migrated to new API keys — the backend uses the **Secret key** (`sb_secret_…`,
 the modern `service_role`) in `SUPABASE_SERVICE_ROLE_KEY`, sent as both `Authorization: Bearer` and `apikey`.
