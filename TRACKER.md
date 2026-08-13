@@ -38,7 +38,7 @@ Live URLs:
 - Frontend: https://job-search-ai-green.vercel.app
 - Backend:  https://jobmatch-backend-wxjw.onrender.com  (health: `/actuator/health`)
 
-## Phase 2 — Resume Upload + Parse  ← _backend in progress_
+## Phase 2 — Resume Upload + Parse  ✅ _complete + deployed_
 - [x] `resume/` feature package (controller, service, entity, repository, DTOs)
 - [x] `V2__resumes.sql` migration (resumes table, FK → users, index on user_id)
 - [x] Storage abstraction: `ResumeStorage` port + `SupabaseResumeStorage` (prod) / `InMemoryResumeStorage` (dev/tests), selected via `resume.storage.provider`
@@ -49,7 +49,7 @@ Live URLs:
 - [x] Integration test: `ResumeIntegrationTest` (Testcontainers, real PDF via PDFBox) — needs Docker to run
 - [x] Supabase Storage bucket `resumes` created + `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`/`RESUME_STORAGE_PROVIDER=supabase` set on Render
 - [x] **Live verified in prod:** upload → Tika extract → Supabase Storage → download (byte-perfect) → delete
-- [ ] `mvnw verify` green with Docker (runs the resume integration test)
+- [x] `mvnw verify` green with Docker — 18/18 tests pass (incl. resume Testcontainers integration test)
 - [x] Frontend: resume upload UI on dashboard (upload, view extracted text, list, delete) — live-verified in browser
 - [x] `frontend/vercel.json` SPA rewrite (fixes deep-link 404 on hard refresh of sub-routes)
 

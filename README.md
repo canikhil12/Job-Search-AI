@@ -84,6 +84,20 @@ cd backend
 Testcontainers spins up a real `pgvector/pgvector:pg16` container. If it fails to start, that is an
 environment problem (Docker not running, image pull, resource limits) — not a test to disable.
 
+<details>
+<summary>If <code>docker</code> isn't on your PATH (e.g. Docker Desktop with a non-standard socket)</summary>
+
+Point Testcontainers at the standard socket so its Ryuk cleanup container can bind-mount it
+(mounting the per-user <code>~/.docker/run/docker.sock</code> path fails with "operation not supported"):
+
+```bash
+export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
+export DOCKER_HOST="unix:///var/run/docker.sock"
+export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE="/var/run/docker.sock"
+./mvnw verify
+```
+</details>
+
 ## Phase 1 verification checklist
 0. `docker info` succeeds (daemon running)
 1. `docker compose up -d` → postgres healthy
