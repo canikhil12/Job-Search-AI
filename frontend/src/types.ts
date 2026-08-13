@@ -28,3 +28,12 @@ export interface Resume {
 export interface ResumeDetail extends Resume {
   extractedText: string
 }
+
+export interface JobMatch {
+  id: string
+  title: string
+  company: string | null
+  location: string | null
+  sourceUrl: string | null
+  score: number
+}

@@ -1,5 +1,5 @@
 import { apiFetch, apiUpload } from '../api'
-import type { Resume, ResumeDetail } from '../types'
+import type { JobMatch, Resume, ResumeDetail } from '../types'
 
 export function listResumes(): Promise<Resume[]> {
   return apiFetch<Resume[]>('/api/resumes')
@@ -17,4 +17,8 @@ export function uploadResume(file: File): Promise<ResumeDetail> {
 
 export function deleteResume(id: string): Promise<void> {
   return apiFetch<void>(`/api/resumes/${id}`, { method: 'DELETE' })
+}
+
+export function matchResume(id: string, limit = 5): Promise<JobMatch[]> {
+  return apiFetch<JobMatch[]>(`/api/resumes/${id}/matches?limit=${limit}`)
 }

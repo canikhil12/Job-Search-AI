@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { ApiRequestError } from '../api'
-import type { Resume, ResumeDetail } from '../types'
-import { deleteResume, getResume, listResumes, uploadResume } from './resumeApi'
+import type { JobMatch, Resume, ResumeDetail } from '../types'
+import { deleteResume, getResume, listResumes, matchResume, uploadResume } from './resumeApi'
 
 const ACCEPTED = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 const ACCEPTED_EXT = ['.pdf', '.docx']
@@ -23,6 +23,8 @@ export function ResumePanel() {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [detail, setDetail] = useState<ResumeDetail | null>(null)
+  const [matches, setMatches] = useState<{ resumeId: string; fileName: string; items: JobMatch[] } | null>(null)
+  const [matchingId, setMatchingId] = useState<string | null>(null)
   const fileInput = useRef<HTMLInputElement>(null)
 
   async function refresh() {
@@ -74,11 +76,25 @@ export function ResumePanel() {
     }
   }
 
+  async function handleMatch(resume: Resume) {
+    setError(null)
+    setMatchingId(resume.id)
+    try {
+      const items = await matchResume(resume.id)
+      setMatches({ resumeId: resume.id, fileName: resume.fileName, items })
+    } catch (err) {
+      setError(err instanceof ApiRequestError ? err.message : 'Could not find matches.')
+    } finally {
+      setMatchingId(null)
+    }
+  }
+
   async function handleDelete(id: string) {
     setError(null)
     try {
       await deleteResume(id)
       if (detail?.id === id) setDetail(null)
+      if (matches?.resumeId === id) setMatches(null)
       await refresh()
     } catch {
       setError('Could not delete that resume.')
@@ -124,6 +140,14 @@ export function ResumePanel() {
                 </span>
               </div>
               <div className="resume-actions">
+                <button
+                  type="button"
+                  className="link strong"
+                  onClick={() => handleMatch(r)}
+                  disabled={matchingId === r.id}
+                >
+                  {matchingId === r.id ? 'Matching…' : 'Find matches'}
+                </button>
                 <button type="button" className="link" onClick={() => handleView(r.id)}>
                   View text
                 </button>
@@ -134,6 +158,46 @@ export function ResumePanel() {
             </li>
           ))}
         </ul>
+      )}
+
+      {matches && (
+        <div className="extracted">
+          <div className="panel-head">
+            <h3>Top matches — {matches.fileName}</h3>
+            <button type="button" className="link" onClick={() => setMatches(null)}>
+              Close
+            </button>
+          </div>
+          {matches.items.length === 0 ? (
+            <p className="muted small">No jobs to match against yet.</p>
+          ) : (
+            <ul className="match-list">
+              {matches.items.map((m, i) => (
+                <li key={m.id}>
+                  <div className="match-rank">{i + 1}</div>
+                  <div className="match-body">
+                    <div className="match-title">
+                      {m.sourceUrl ? (
+                        <a href={m.sourceUrl} target="_blank" rel="noopener noreferrer">
+                          {m.title}
+                        </a>
+                      ) : (
+                        m.title
+                      )}
+                    </div>
+                    <div className="muted small">
+                      {[m.company, m.location].filter(Boolean).join(' · ')}
+                    </div>
+                    <div className="score-bar" aria-hidden="true">
+                      <span style={{ width: `${Math.max(0, Math.min(1, m.score)) * 100}%` }} />
+                    </div>
+                  </div>
+                  <div className="match-score">{(m.score * 100).toFixed(0)}%</div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       )}
 
       {detail && (
