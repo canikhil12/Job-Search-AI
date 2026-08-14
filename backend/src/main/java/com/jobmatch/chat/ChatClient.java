@@ -13,4 +13,7 @@ public interface ChatClient {
      * text chunk as it arrives. Blocks until the stream finishes; throws {@link ChatException} on failure.
      */
     void streamCompletion(String system, String user, Consumer<String> onDelta);
+
+    /** Returns the full completion for the given prompt (non-streaming) — used for structured output. */
+    String complete(String system, String user);
 }

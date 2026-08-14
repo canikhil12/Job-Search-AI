@@ -22,4 +22,14 @@ public class FakeChatClient implements ChatClient {
             onDelta.accept(word + " ");
         }
     }
+
+    @Override
+    public String complete(String system, String user) {
+        // Canned ATS-shaped JSON so the structured-output path is testable without a key.
+        return """
+                {"score": 72,
+                 "matchedKeywords": ["Java", "Spring Boot", "AWS"],
+                 "missingKeywords": ["Scala", "Akka"],
+                 "summary": "Solid backend fit with a couple of framework gaps."}""";
+    }
 }

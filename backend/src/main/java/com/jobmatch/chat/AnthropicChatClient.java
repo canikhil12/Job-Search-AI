@@ -92,6 +92,46 @@ public class AnthropicChatClient implements ChatClient {
         }
     }
 
+    @Override
+    public String complete(String system, String user) {
+        String body;
+        try {
+            body = objectMapper.writeValueAsString(Map.of(
+                    "model", model,
+                    "max_tokens", maxTokens,
+                    "system", system,
+                    "messages", List.of(Map.of("role", "user", "content", user))));
+        } catch (Exception ex) {
+            throw new ChatException("Failed to build Anthropic request", ex);
+        }
+
+        HttpRequest request = HttpRequest.newBuilder(URI.create(baseUrl + "/v1/messages"))
+                .header("x-api-key", apiKey)
+                .header("anthropic-version", anthropicVersion)
+                .header("content-type", "application/json")
+                .timeout(Duration.ofSeconds(60))
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                throw new ChatException("Anthropic API returned " + response.statusCode() + ": "
+                        + truncate(response.body()));
+            }
+            JsonNode content = objectMapper.readTree(response.body()).path("content");
+            for (JsonNode block : content) {
+                if ("text".equals(block.path("type").asText())) {
+                    return block.path("text").asText();
+                }
+            }
+            throw new ChatException("Anthropic response had no text content");
+        } catch (ChatException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ChatException("Anthropic request failed", ex);
+        }
+    }
+
     // SSE lines are "event: ..." / "data: {...}" / blank. We only need the JSON on data lines.
     private void handleLine(String line, Consumer<String> onDelta) {
         if (line == null || !line.startsWith("data:")) {
