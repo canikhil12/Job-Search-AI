@@ -1,5 +1,6 @@
 import type { Job } from '../types'
 import type { JobStatusValue } from '../jobstatus/jobStatusApi'
+import { ScoreRing } from './ScoreRing'
 
 function relativeDate(iso: string | null): string | null {
   if (!iso) return null
@@ -35,12 +36,7 @@ export function JobCard({
         </div>
       </div>
       <div className="job-card-side">
-        {score != null && (
-          <div className="score-chip">
-            <strong>{Math.round(score * 100)}%</strong>
-            <span>match</span>
-          </div>
-        )}
+        {score != null && <ScoreRing score={score} />}
         <div className="job-card-actions">
           <button
             type="button"
