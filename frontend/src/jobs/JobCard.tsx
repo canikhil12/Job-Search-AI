@@ -1,4 +1,5 @@
 import type { Job } from '../types'
+import type { JobStatusValue } from '../jobstatus/jobStatusApi'
 
 function relativeDate(iso: string | null): string | null {
   if (!iso) return null
@@ -8,18 +9,29 @@ function relativeDate(iso: string | null): string | null {
   return `${days} days ago`
 }
 
-export function JobCard({ job, score, onOpen }: { job: Job; score?: number; onOpen: () => void }) {
+export function JobCard({
+  job,
+  score,
+  status,
+  onOpen,
+  onToggleSave,
+}: {
+  job: Job
+  score?: number
+  status?: JobStatusValue
+  onOpen: () => void
+  onToggleSave: () => void
+}) {
   const posted = relativeDate(job.postedAt)
   return (
-    <button type="button" className="job-card" onClick={onOpen}>
+    <div className="job-card" role="button" tabIndex={0} onClick={onOpen}>
       <div className="job-card-main">
         <h3>{job.title}</h3>
         <p className="muted small">{[job.company, job.location].filter(Boolean).join(' · ')}</p>
         <div className="job-card-tags">
           {posted && <span className="tag recency">{posted}</span>}
-          {job.source && job.source !== 'manual' && job.source !== 'seed:indeed' && (
-            <span className="tag">{job.source}</span>
-          )}
+          {status === 'applied' && <span className="tag applied">Applied ✓</span>}
+          {status === 'saved' && <span className="tag saved">Saved</span>}
         </div>
       </div>
       <div className="job-card-side">
@@ -29,18 +41,30 @@ export function JobCard({ job, score, onOpen }: { job: Job; score?: number; onOp
             <span>match</span>
           </div>
         )}
-        {job.sourceUrl && (
-          <a
-            className="apply-link"
-            href={job.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
+        <div className="job-card-actions">
+          <button
+            type="button"
+            className="link"
+            onClick={(e) => {
+              e.stopPropagation()
+              onToggleSave()
+            }}
           >
-            Apply →
-          </a>
-        )}
+            {status === 'saved' ? '★ Saved' : '☆ Save'}
+          </button>
+          {job.sourceUrl && (
+            <a
+              className="apply-link"
+              href={job.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Apply →
+            </a>
+          )}
+        </div>
       </div>
-    </button>
+    </div>
   )
 }

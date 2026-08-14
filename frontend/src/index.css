@@ -676,3 +676,35 @@ select {
 .kw.matched { color: #4ade80; border-color: #14532d; background: rgba(22,101,52,0.15); }
 .kw.missing { color: var(--error); border-color: #7f1d1d; background: rgba(127,29,29,0.15); }
 .kw.missing::before { content: '＋ '; }
+
+/* Saved / Applied tracking */
+.filter-tabs { display: flex; gap: 0.4rem; margin-top: 1.1rem; }
+.filter-tabs button {
+  width: auto;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 999px;
+}
+.filter-tabs button:hover:not(:disabled) { background: var(--card); color: var(--text); }
+.filter-tabs button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.job-card-actions { display: flex; align-items: center; gap: 0.75rem; }
+.tag.applied { color: #4ade80; border-color: #14532d; background: rgba(22,101,52,0.15); }
+.tag.saved { color: var(--accent); border-color: #3730a3; background: rgba(55,48,163,0.15); }
+
+.status-actions { display: flex; gap: 0.6rem; }
+.status-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.9rem;
+  padding: 0.55rem;
+}
+.status-btn:hover:not(:disabled) { background: var(--card); }
+.status-btn.on { border-color: var(--accent); color: var(--accent); }
+.status-btn.on.applied { border-color: #4ade80; color: #4ade80; }

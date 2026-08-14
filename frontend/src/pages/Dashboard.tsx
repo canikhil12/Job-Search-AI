@@ -3,6 +3,8 @@ import type { FormEvent } from 'react'
 import type { Job, Resume } from '../types'
 import { listResumes, matchResume } from '../resume/resumeApi'
 import { listJobs, searchJobs } from '../jobs/jobApi'
+import { clearStatus, listStatuses, setStatus } from '../jobstatus/jobStatusApi'
+import type { JobStatusValue } from '../jobstatus/jobStatusApi'
 import { Navbar } from '../components/Navbar'
 import { JobCard } from '../jobs/JobCard'
 import { JobDetailDrawer } from '../jobs/JobDetailDrawer'
@@ -17,6 +19,8 @@ export function Dashboard() {
   )
   const [jobs, setJobs] = useState<Job[]>([])
   const [scores, setScores] = useState<Record<string, number>>({})
+  const [statuses, setStatuses] = useState<Record<string, JobStatusValue>>({})
+  const [filter, setFilter] = useState<'all' | 'saved' | 'applied'>('all')
   const [selectedJob, setSelectedJob] = useState<Job | null>(null)
   const [managerOpen, setManagerOpen] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -60,11 +64,35 @@ export function Dashboard() {
     setJobs(await listJobs())
   }, [])
 
+  const refreshStatuses = useCallback(async () => {
+    try {
+      const list = await listStatuses()
+      setStatuses(Object.fromEntries(list.map((s) => [s.jobId, s.status])))
+    } catch {
+      setStatuses({})
+    }
+  }, [])
+
+  const updateStatus = useCallback(async (jobId: string, status: JobStatusValue | null) => {
+    setStatuses((prev) => {
+      const next = { ...prev }
+      if (status) next[jobId] = status
+      else delete next[jobId]
+      return next
+    })
+    try {
+      if (status) await setStatus(jobId, status)
+      else await clearStatus(jobId)
+    } catch {
+      refreshStatuses() // reconcile on failure
+    }
+  }, [refreshStatuses])
+
   // Initial load.
   useEffect(() => {
     ;(async () => {
       try {
-        const [list] = await Promise.all([refreshResumes(), refreshJobs()])
+        const [list] = await Promise.all([refreshResumes(), refreshJobs(), refreshStatuses()])
         const stored = localStorage.getItem(ACTIVE_KEY)
         const active = list.find((r) => r.id === stored)?.id ?? list[0]?.id ?? null
         setActive(active)
@@ -100,15 +128,26 @@ export function Dashboard() {
     }
   }
 
+  const savedCount = useMemo(
+    () => Object.values(statuses).filter((s) => s === 'saved').length,
+    [statuses],
+  )
+  const appliedCount = useMemo(
+    () => Object.values(statuses).filter((s) => s === 'applied').length,
+    [statuses],
+  )
+
   const sortedJobs = useMemo(() => {
     const scored = Object.keys(scores).length > 0
-    return [...jobs].sort((a, b) => {
-      if (scored) return (scores[b.id] ?? -1) - (scores[a.id] ?? -1)
-      const da = new Date(a.postedAt ?? a.createdAt).getTime()
-      const db = new Date(b.postedAt ?? b.createdAt).getTime()
-      return db - da
-    })
-  }, [jobs, scores])
+    return [...jobs]
+      .filter((j) => (filter === 'all' ? true : statuses[j.id] === filter))
+      .sort((a, b) => {
+        if (scored) return (scores[b.id] ?? -1) - (scores[a.id] ?? -1)
+        const da = new Date(a.postedAt ?? a.createdAt).getTime()
+        const db = new Date(b.postedAt ?? b.createdAt).getTime()
+        return db - da
+      })
+  }, [jobs, scores, statuses, filter])
 
   return (
     <div className="app-shell">
@@ -145,6 +184,22 @@ export function Dashboard() {
 
         {error && <p className="error">{error}</p>}
 
+        <div className="filter-tabs">
+          <button type="button" className={filter === 'all' ? 'active' : ''} onClick={() => setFilter('all')}>
+            All jobs
+          </button>
+          <button type="button" className={filter === 'saved' ? 'active' : ''} onClick={() => setFilter('saved')}>
+            Saved{savedCount ? ` (${savedCount})` : ''}
+          </button>
+          <button
+            type="button"
+            className={filter === 'applied' ? 'active' : ''}
+            onClick={() => setFilter('applied')}
+          >
+            Applied{appliedCount ? ` (${appliedCount})` : ''}
+          </button>
+        </div>
+
         <div className="board-meta muted small">
           {loading
             ? 'Loading…'
@@ -155,10 +210,19 @@ export function Dashboard() {
 
         <div className="job-list">
           {sortedJobs.map((job) => (
-            <JobCard key={job.id} job={job} score={scores[job.id]} onOpen={() => setSelectedJob(job)} />
+            <JobCard
+              key={job.id}
+              job={job}
+              score={scores[job.id]}
+              status={statuses[job.id]}
+              onOpen={() => setSelectedJob(job)}
+              onToggleSave={() => updateStatus(job.id, statuses[job.id] === 'saved' ? null : 'saved')}
+            />
           ))}
           {!loading && sortedJobs.length === 0 && (
-            <p className="muted">No jobs yet. Try a search above.</p>
+            <p className="muted">
+              {filter === 'all' ? 'No jobs yet. Try a search above.' : `No ${filter} jobs yet.`}
+            </p>
           )}
         </div>
       </main>
@@ -167,6 +231,8 @@ export function Dashboard() {
         <JobDetailDrawer
           job={selectedJob}
           activeResumeId={activeResumeId}
+          status={statuses[selectedJob.id]}
+          onSetStatus={(s) => updateStatus(selectedJob.id, s)}
           onClose={() => setSelectedJob(null)}
         />
       )}

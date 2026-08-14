@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { AtsResult, Job } from '../types'
 import { AiStreamPanel } from '../ai/AiStreamPanel'
 import { getAts } from '../ats/atsApi'
+import type { JobStatusValue } from '../jobstatus/jobStatusApi'
 
 type Tab = 'overview' | 'analysis' | 'cover-letter' | 'tailor'
 
@@ -14,10 +15,14 @@ function atsLevel(score: number): string {
 export function JobDetailDrawer({
   job,
   activeResumeId,
+  status,
+  onSetStatus,
   onClose,
 }: {
   job: Job
   activeResumeId: string | null
+  status?: JobStatusValue
+  onSetStatus: (status: JobStatusValue | null) => void
   onClose: () => void
 }) {
   const [tab, setTab] = useState<Tab>('overview')
@@ -59,6 +64,23 @@ export function JobDetailDrawer({
             Apply on the job site →
           </a>
         )}
+
+        <div className="status-actions">
+          <button
+            type="button"
+            className={`status-btn ${status === 'saved' ? 'on' : ''}`}
+            onClick={() => onSetStatus(status === 'saved' ? null : 'saved')}
+          >
+            {status === 'saved' ? '★ Saved' : '☆ Save'}
+          </button>
+          <button
+            type="button"
+            className={`status-btn ${status === 'applied' ? 'on applied' : ''}`}
+            onClick={() => onSetStatus(status === 'applied' ? null : 'applied')}
+          >
+            {status === 'applied' ? '✓ Applied' : 'Mark as applied'}
+          </button>
+        </div>
 
         {activeResumeId && (
           <div className="ats">
