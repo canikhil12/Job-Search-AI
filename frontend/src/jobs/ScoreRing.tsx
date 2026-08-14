@@ -1,9 +1,29 @@
+import { useEffect, useState } from 'react'
+
 export function ScoreRing({ score, size = 62 }: { score: number; size?: number }) {
-  const pct = Math.max(0, Math.min(1, score))
+  const target = Math.max(0, Math.min(1, score))
+  const [shown, setShown] = useState(0)
+
+  // Animate the ring fill + number count-up on mount / when the score changes.
+  useEffect(() => {
+    let raf = 0
+    let start = 0
+    const duration = 750
+    const tick = (t: number) => {
+      if (!start) start = t
+      const p = Math.min(1, (t - start) / duration)
+      const eased = 1 - Math.pow(1 - p, 3) // ease-out cubic
+      setShown(target * eased)
+      if (p < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [target])
+
   const stroke = 6
   const r = (size - stroke) / 2
   const circumference = 2 * Math.PI * r
-  const offset = circumference * (1 - pct)
+  const offset = circumference * (1 - shown)
   const mid = size / 2
 
   return (
@@ -28,7 +48,7 @@ export function ScoreRing({ score, size = 62 }: { score: number; size?: number }
         transform={`rotate(-90 ${mid} ${mid})`}
       />
       <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" className="ring-label">
-        {Math.round(pct * 100)}%
+        {Math.round(shown * 100)}%
       </text>
     </svg>
   )

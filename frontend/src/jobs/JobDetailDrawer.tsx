@@ -30,6 +30,13 @@ export function JobDetailDrawer({
   const [atsLoading, setAtsLoading] = useState(false)
   const [atsError, setAtsError] = useState<string | null>(null)
 
+  // Close on Escape.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
   // Compute the ATS score when the drawer opens for a job (needs an active résumé).
   useEffect(() => {
     if (!activeResumeId) return

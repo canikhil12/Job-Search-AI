@@ -3,6 +3,7 @@ import type { ChangeEvent } from 'react'
 import { ApiRequestError } from '../api'
 import type { Resume, ResumeDetail } from '../types'
 import { deleteResume, getResume, uploadResume } from './resumeApi'
+import { useToast } from '../ui/ToastContext'
 
 const ACCEPTED_EXT = ['.pdf', '.docx']
 
@@ -45,6 +46,7 @@ export function ResumeSidebar({
   const [error, setError] = useState<string | null>(null)
   const [viewing, setViewing] = useState<ResumeDetail | null>(null)
   const fileInput = useRef<HTMLInputElement>(null)
+  const toast = useToast()
 
   async function handleFile(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -59,8 +61,11 @@ export function ResumeSidebar({
       const uploaded = await uploadResume(file)
       await onChanged()
       onSetActive(uploaded.id)
+      toast('Résumé uploaded and set active', 'success')
     } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : 'Upload failed.')
+      const msg = err instanceof ApiRequestError ? err.message : 'Upload failed.'
+      setError(msg)
+      toast(msg, 'error')
     } finally {
       setUploading(false)
       if (fileInput.current) fileInput.current.value = ''
@@ -72,8 +77,10 @@ export function ResumeSidebar({
     try {
       await deleteResume(id)
       await onChanged()
+      toast('Résumé deleted')
     } catch {
       setError('Could not delete that résumé.')
+      toast('Could not delete that résumé.', 'error')
     }
   }
 

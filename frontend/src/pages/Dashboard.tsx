@@ -9,6 +9,7 @@ import { Navbar } from '../components/Navbar'
 import { JobCard } from '../jobs/JobCard'
 import { JobDetailDrawer } from '../jobs/JobDetailDrawer'
 import { ResumeSidebar } from '../resume/ResumeSidebar'
+import { useToast } from '../ui/ToastContext'
 
 const ACTIVE_KEY = 'jobmatch.activeResume'
 const CHIPS = ['Java', 'Spring Boot', 'Remote', 'Senior', 'Full-time']
@@ -31,6 +32,7 @@ export function Dashboard() {
   const [days, setDays] = useState(3)
   const [textFilter, setTextFilter] = useState('')
   const [chips, setChips] = useState<string[]>([])
+  const toast = useToast()
 
   const refreshScores = useCallback(async (resumeId: string | null) => {
     if (!resumeId) {
@@ -114,11 +116,13 @@ export function Dashboard() {
     setSearching(true)
     setError(null)
     try {
-      await searchJobs({ query, maxDaysOld: days, limit: 20 })
+      const found = await searchJobs({ query, maxDaysOld: days, limit: 20 })
       await refreshJobs()
       await refreshScores(activeResumeId)
+      toast(`Found ${found.length} job${found.length === 1 ? '' : 's'} for “${query}”`, 'success')
     } catch {
       setError('Search failed. Browse the existing jobs below.')
+      toast('Search failed. Try again.', 'error')
     } finally {
       setSearching(false)
     }
@@ -220,16 +224,18 @@ export function Dashboard() {
           <div className="section-label">Smart search &amp; results</div>
 
           <div className="job-list">
-            {visibleJobs.map((job) => (
-              <JobCard
-                key={job.id}
-                job={job}
-                score={scores[job.id]}
-                status={statuses[job.id]}
-                onOpen={() => setSelectedJob(job)}
-                onToggleSave={() => updateStatus(job.id, statuses[job.id] === 'saved' ? null : 'saved')}
-              />
-            ))}
+            {loading
+              ? Array.from({ length: 5 }).map((_, i) => <div key={i} className="skeleton-card" />)
+              : visibleJobs.map((job) => (
+                  <JobCard
+                    key={job.id}
+                    job={job}
+                    score={scores[job.id]}
+                    status={statuses[job.id]}
+                    onOpen={() => setSelectedJob(job)}
+                    onToggleSave={() => updateStatus(job.id, statuses[job.id] === 'saved' ? null : 'saved')}
+                  />
+                ))}
             {!loading && visibleJobs.length === 0 && (
               <p className="muted">No jobs match. Try a search or clear the filters.</p>
             )}

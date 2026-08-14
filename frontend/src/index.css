@@ -774,7 +774,7 @@ select {
 /* Score ring */
 .score-ring { display: block; }
 .ring-track { stroke: var(--border); }
-.ring-progress { stroke: #2dd4bf; transition: stroke-dashoffset 0.6s ease; }
+.ring-progress { stroke: #2dd4bf; }
 .ring-label { fill: var(--text); font-size: 0.82rem; font-weight: 700; }
 .ring-progress { stroke: url(#ringGradient); }
 
@@ -814,3 +814,69 @@ select {
 .row-icons button { width: auto; background: none; border: none; color: var(--muted); padding: 0.25rem; cursor: pointer; display: flex; }
 .row-icons button:hover:not(:disabled) { color: var(--text); background: none; }
 .row-icons button.danger:hover { color: var(--error); }
+
+/* ===== Interactions & motion ===== */
+@media (prefers-reduced-motion: no-preference) {
+  .job-card { animation: cardIn 0.34s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .drawer { animation: slideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
+  .drawer-overlay, .modal-overlay { animation: fadeIn 0.18s ease; }
+  .modal { animation: pop 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
+}
+
+@keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+
+/* Richer hover on job cards */
+.job-card { transition: border-color 0.15s, transform 0.12s ease, background 0.15s, box-shadow 0.15s; }
+.job-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(2, 6, 23, 0.45);
+  border-color: var(--accent);
+  background: var(--card);
+}
+.job-card:active { transform: translateY(0); }
+
+/* Buttons / chips press feedback */
+button, .pill-btn, .upload-btn, .chip, .btn-apply { transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.08s; }
+button:active:not(:disabled), .chip:active, .pill-btn:active { transform: scale(0.97); }
+.filter-tabs button, .tabs button { transition: background 0.15s, color 0.15s, border-color 0.15s; }
+
+/* Loading skeletons */
+.skeleton-card {
+  height: 92px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: linear-gradient(100deg, rgba(148,163,184,0.06) 30%, rgba(148,163,184,0.14) 50%, rgba(148,163,184,0.06) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s ease-in-out infinite;
+}
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+/* Toasts */
+.toaster {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 100;
+}
+.toast {
+  min-width: 220px;
+  max-width: 360px;
+  padding: 0.7rem 0.95rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  color: var(--text);
+  background: #1e293b;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  box-shadow: 0 12px 30px rgba(2, 6, 23, 0.5);
+  animation: toastIn 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.toast.success { border-left-color: #4ade80; }
+.toast.error { border-left-color: var(--error); }
+@keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
