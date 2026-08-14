@@ -80,15 +80,15 @@ key reserved for Phases 5–6 (text generation).
 - [x] Verify live: Java/Spring résumé ranks 3 backend jobs top, data-eng last (0.64 vs 0.50); a data-eng résumé inverts it (Cribl 0.50→0.72, #1) — genuinely semantic
 - [x] Frontend: "Find matches" on the dashboard — ranked jobs, score bars, Apply links; live-verified in browser (backend_resume.pdf → 3 backend jobs top, Cribl last)
 
-## Phase 5 — AI Gap Analysis (SSE)  ← _backend built, tests green; needs ANTHROPIC key + frontend_
+## Phase 5 — AI Gap Analysis (SSE)  ✅ _complete + deployed (Claude via Anthropic direct)_
 - [x] `chat/` capability: ChatClient port + AnthropicChatClient (native Messages API, java.net.http streaming) / FakeChatClient
 - [x] `analysis/` feature: AnalysisService (builds prompt, validates ownership → 404) + AnalysisController (SSE relay via SseEmitter on a TaskExecutor)
 - [x] `GET /api/resumes/{id}/jobs/{jobId}/analysis` streams tokens (JSON-encoded frames)
 - [x] Fixed Spring Security + async gotchas: JWT filter runs on async dispatch; no `produces` on the SSE endpoint (so errors render as JSON)
 - [x] Tests: FakeChatClientTest (1) + AnalysisIntegrationTest (3, SSE stream + 404 + 401) — full suite 39/39 green
 - [x] Frontend: "Analyze" on each matched job → live-streaming gap-analysis panel (fetch + ReadableStream SSE consumer, so the auth header works)
-- [ ] Set `CHAT_PROVIDER=anthropic` + `ANTHROPIC_API_KEY` on Render
-- [ ] Verify live: real streamed analysis from Claude
+- [x] Set `CHAT_PROVIDER=anthropic` + `ANTHROPIC_API_KEY` (+ `CHAT_MODEL=claude-haiku-4-5-20251001`) on Render
+- [x] Verify live: Claude streamed a real, specific gap analysis via SSE (21 frames, correctly flagged data-eng skills missing from a backend résumé)
 
 ## Phase 6 — Cover Letters
 - [ ] AI-generated, job-tailored cover letters
