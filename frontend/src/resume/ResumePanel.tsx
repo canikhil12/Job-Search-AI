@@ -3,6 +3,15 @@ import type { ChangeEvent } from 'react'
 import { ApiRequestError } from '../api'
 import type { JobMatch, Resume, ResumeDetail } from '../types'
 import { deleteResume, getResume, listResumes, matchResume, uploadResume } from './resumeApi'
+import { streamAnalysis } from '../analysis/analysisApi'
+
+interface AnalysisState {
+  jobId: string
+  jobTitle: string
+  text: string
+  streaming: boolean
+  error: string | null
+}
 
 const ACCEPTED = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 const ACCEPTED_EXT = ['.pdf', '.docx']
@@ -25,7 +34,9 @@ export function ResumePanel() {
   const [detail, setDetail] = useState<ResumeDetail | null>(null)
   const [matches, setMatches] = useState<{ resumeId: string; fileName: string; items: JobMatch[] } | null>(null)
   const [matchingId, setMatchingId] = useState<string | null>(null)
+  const [analysis, setAnalysis] = useState<AnalysisState | null>(null)
   const fileInput = useRef<HTMLInputElement>(null)
+  const analysisAbort = useRef<AbortController | null>(null)
 
   async function refresh() {
     try {
@@ -76,9 +87,42 @@ export function ResumePanel() {
     }
   }
 
+  function closeAnalysis() {
+    analysisAbort.current?.abort()
+    analysisAbort.current = null
+    setAnalysis(null)
+  }
+
+  function handleAnalyze(resumeId: string, match: JobMatch) {
+    closeAnalysis()
+    setAnalysis({ jobId: match.id, jobTitle: match.title, text: '', streaming: true, error: null })
+    const controller = new AbortController()
+    analysisAbort.current = controller
+    streamAnalysis(
+      resumeId,
+      match.id,
+      {
+        onToken: (t) => setAnalysis((a) => (a && a.jobId === match.id ? { ...a, text: a.text + t } : a)),
+        onError: (msg) =>
+          setAnalysis((a) => (a && a.jobId === match.id ? { ...a, error: msg, streaming: false } : a)),
+      },
+      controller.signal,
+    )
+      .then(() => setAnalysis((a) => (a && a.jobId === match.id ? { ...a, streaming: false } : a)))
+      .catch((err) => {
+        if (controller.signal.aborted) return
+        setAnalysis((a) =>
+          a && a.jobId === match.id
+            ? { ...a, streaming: false, error: err instanceof ApiRequestError ? err.message : 'Analysis failed.' }
+            : a,
+        )
+      })
+  }
+
   async function handleMatch(resume: Resume) {
     setError(null)
     setMatchingId(resume.id)
+    closeAnalysis()
     try {
       const items = await matchResume(resume.id)
       setMatches({ resumeId: resume.id, fileName: resume.fileName, items })
@@ -94,7 +138,10 @@ export function ResumePanel() {
     try {
       await deleteResume(id)
       if (detail?.id === id) setDetail(null)
-      if (matches?.resumeId === id) setMatches(null)
+      if (matches?.resumeId === id) {
+        closeAnalysis()
+        setMatches(null)
+      }
       await refresh()
     } catch {
       setError('Could not delete that resume.')
@@ -164,7 +211,14 @@ export function ResumePanel() {
         <div className="extracted">
           <div className="panel-head">
             <h3>Top matches — {matches.fileName}</h3>
-            <button type="button" className="link" onClick={() => setMatches(null)}>
+            <button
+              type="button"
+              className="link"
+              onClick={() => {
+                closeAnalysis()
+                setMatches(null)
+              }}
+            >
               Close
             </button>
           </div>
@@ -192,10 +246,42 @@ export function ResumePanel() {
                       <span style={{ width: `${Math.max(0, Math.min(1, m.score)) * 100}%` }} />
                     </div>
                   </div>
-                  <div className="match-score">{(m.score * 100).toFixed(0)}%</div>
+                  <div className="match-side">
+                    <span className="match-score">{(m.score * 100).toFixed(0)}%</span>
+                    <button
+                      type="button"
+                      className="link"
+                      onClick={() => handleAnalyze(matches.resumeId, m)}
+                      disabled={analysis?.jobId === m.id && analysis.streaming}
+                    >
+                      {analysis?.jobId === m.id && analysis.streaming ? 'Analyzing…' : 'Analyze'}
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
+          )}
+
+          {analysis && (
+            <div className="analysis">
+              <div className="panel-head">
+                <h4>
+                  Gap analysis — {analysis.jobTitle}
+                  {analysis.streaming && <span className="pulse"> ●</span>}
+                </h4>
+                <button type="button" className="link" onClick={closeAnalysis}>
+                  Close
+                </button>
+              </div>
+              {analysis.error ? (
+                <p className="error">{analysis.error}</p>
+              ) : (
+                <div className="analysis-text">
+                  {analysis.text}
+                  {analysis.streaming && !analysis.text && <span className="muted">Thinking…</span>}
+                </div>
+              )}
+            </div>
           )}
         </div>
       )}

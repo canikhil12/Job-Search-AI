@@ -86,8 +86,8 @@ key reserved for Phases 5–6 (text generation).
 - [x] `GET /api/resumes/{id}/jobs/{jobId}/analysis` streams tokens (JSON-encoded frames)
 - [x] Fixed Spring Security + async gotchas: JWT filter runs on async dispatch; no `produces` on the SSE endpoint (so errors render as JSON)
 - [x] Tests: FakeChatClientTest (1) + AnalysisIntegrationTest (3, SSE stream + 404 + 401) — full suite 39/39 green
+- [x] Frontend: "Analyze" on each matched job → live-streaming gap-analysis panel (fetch + ReadableStream SSE consumer, so the auth header works)
 - [ ] Set `CHAT_PROVIDER=anthropic` + `ANTHROPIC_API_KEY` on Render
-- [ ] Frontend: streaming analysis panel (pick a matched job → watch Claude analyze the gap live)
 - [ ] Verify live: real streamed analysis from Claude
 
 ## Phase 6 — Cover Letters

@@ -97,3 +97,66 @@ export async function apiUpload<T>(path: string, formData: FormData): Promise<T>
   })
   return handleResponse<T>(response)
 }
+
+export interface SseHandlers {
+  onToken: (token: string) => void
+  onError?: (message: string) => void
+}
+
+/**
+ * Consume a Server-Sent Events stream with the auth header attached (EventSource can't set
+ * headers). Reads the fetch body incrementally, splits on blank lines, and dispatches each frame.
+ * Resolves when the stream ends; rejects on a non-2xx opening response.
+ */
+export async function apiStreamSse(path: string, handlers: SseHandlers, signal?: AbortSignal): Promise<void> {
+  const response = await fetch(`${API_BASE}${path}`, {
+    headers: authHeader({ Accept: 'text/event-stream' }),
+    signal,
+  })
+  if (response.status === 401) {
+    onUnauthorized?.()
+    throw new UnauthorizedError()
+  }
+  if (!response.ok || !response.body) {
+    const body = (await response.json().catch(() => null)) as ApiError | null
+    throw new ApiRequestError(
+      body ?? { timestamp: new Date().toISOString(), status: response.status, message: 'Request failed' },
+    )
+  }
+
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+  for (;;) {
+    const { value, done } = await reader.read()
+    if (done) break
+    buffer += decoder.decode(value, { stream: true })
+    let sep: number
+    while ((sep = buffer.indexOf('\n\n')) !== -1) {
+      const frame = buffer.slice(0, sep)
+      buffer = buffer.slice(sep + 2)
+      dispatchSseFrame(frame, handlers)
+    }
+  }
+}
+
+function dispatchSseFrame(frame: string, handlers: SseHandlers): void {
+  let event = 'message'
+  const dataLines: string[] = []
+  for (const line of frame.split('\n')) {
+    if (line.startsWith('event:')) event = line.slice(6).trim()
+    else if (line.startsWith('data:')) dataLines.push(line.slice(5).replace(/^ /, ''))
+  }
+  const data = dataLines.join('\n')
+  if (event === 'error') {
+    handlers.onError?.(data || 'Analysis failed')
+    return
+  }
+  if (event === 'done') return
+  // default "message" frames carry a JSON-encoded token string
+  try {
+    handlers.onToken(JSON.parse(data) as string)
+  } catch {
+    // ignore keep-alive / unparseable frames
+  }
+}
