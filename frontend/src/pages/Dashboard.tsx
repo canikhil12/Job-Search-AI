@@ -1,22 +1,185 @@
-import { useAuth } from '../auth/AuthContext'
-import { ResumePanel } from '../resume/ResumePanel'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { FormEvent } from 'react'
+import type { Job, Resume } from '../types'
+import { listResumes, matchResume } from '../resume/resumeApi'
+import { listJobs, searchJobs } from '../jobs/jobApi'
+import { Navbar } from '../components/Navbar'
+import { JobCard } from '../jobs/JobCard'
+import { JobDetailDrawer } from '../jobs/JobDetailDrawer'
+import { ResumeManager } from '../resume/ResumeManager'
+
+const ACTIVE_KEY = 'jobmatch.activeResume'
 
 export function Dashboard() {
-  const { user, logout } = useAuth()
+  const [resumes, setResumes] = useState<Resume[]>([])
+  const [activeResumeId, setActiveResumeId] = useState<string | null>(
+    () => localStorage.getItem(ACTIVE_KEY),
+  )
+  const [jobs, setJobs] = useState<Job[]>([])
+  const [scores, setScores] = useState<Record<string, number>>({})
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null)
+  const [managerOpen, setManagerOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [searching, setSearching] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const [query, setQuery] = useState('')
+  const [location, setLocation] = useState('')
+  const [days, setDays] = useState(3)
+
+  const refreshScores = useCallback(async (resumeId: string | null) => {
+    if (!resumeId) {
+      setScores({})
+      return
+    }
+    try {
+      const matches = await matchResume(resumeId, 50)
+      setScores(Object.fromEntries(matches.map((m) => [m.id, m.score])))
+    } catch {
+      setScores({})
+    }
+  }, [])
+
+  const setActive = useCallback(
+    (id: string | null) => {
+      setActiveResumeId(id)
+      if (id) localStorage.setItem(ACTIVE_KEY, id)
+      else localStorage.removeItem(ACTIVE_KEY)
+      refreshScores(id)
+    },
+    [refreshScores],
+  )
+
+  const refreshResumes = useCallback(async () => {
+    const list = await listResumes()
+    setResumes(list)
+    return list
+  }, [])
+
+  const refreshJobs = useCallback(async () => {
+    setJobs(await listJobs())
+  }, [])
+
+  // Initial load.
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const [list] = await Promise.all([refreshResumes(), refreshJobs()])
+        const stored = localStorage.getItem(ACTIVE_KEY)
+        const active = list.find((r) => r.id === stored)?.id ?? list[0]?.id ?? null
+        setActive(active)
+      } catch {
+        setError('Could not load your data.')
+      } finally {
+        setLoading(false)
+      }
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  async function handleSearch(e: FormEvent) {
+    e.preventDefault()
+    if (!query.trim()) return
+    setSearching(true)
+    setError(null)
+    try {
+      await searchJobs({ query, location, maxDaysOld: days, limit: 20 })
+      await refreshJobs()
+      await refreshScores(activeResumeId)
+    } catch {
+      setError('Search failed. If live search isn’t configured yet, browse the existing jobs below.')
+    } finally {
+      setSearching(false)
+    }
+  }
+
+  async function onResumesChanged() {
+    const list = await refreshResumes()
+    if (activeResumeId && !list.some((r) => r.id === activeResumeId)) {
+      setActive(list[0]?.id ?? null)
+    }
+  }
+
+  const sortedJobs = useMemo(() => {
+    const scored = Object.keys(scores).length > 0
+    return [...jobs].sort((a, b) => {
+      if (scored) return (scores[b.id] ?? -1) - (scores[a.id] ?? -1)
+      const da = new Date(a.postedAt ?? a.createdAt).getTime()
+      const db = new Date(b.postedAt ?? b.createdAt).getTime()
+      return db - da
+    })
+  }, [jobs, scores])
 
   return (
-    <div className="dashboard">
-      <header className="dashboard-head">
-        <div>
-          <h1>Hello, {user?.fullName}</h1>
-          <p className="muted">Signed in as {user?.email}.</p>
-        </div>
-        <button type="button" className="secondary" onClick={logout}>
-          Log out
-        </button>
-      </header>
+    <div className="app-shell">
+      <Navbar
+        resumes={resumes}
+        activeResumeId={activeResumeId}
+        onSelectResume={setActive}
+        onManageResumes={() => setManagerOpen(true)}
+      />
 
-      <ResumePanel />
+      <main className="board">
+        <form className="search-bar" onSubmit={handleSearch}>
+          <input
+            className="search-query"
+            placeholder="Search jobs — e.g. Java backend engineer"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <input
+            className="search-location"
+            placeholder="Location (optional)"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+          <select value={days} onChange={(e) => setDays(Number(e.target.value))}>
+            <option value={1}>Last 1 day</option>
+            <option value={3}>Last 3 days</option>
+            <option value={7}>Last week</option>
+          </select>
+          <button type="submit" disabled={searching}>
+            {searching ? 'Searching…' : 'Search'}
+          </button>
+        </form>
+
+        {error && <p className="error">{error}</p>}
+
+        <div className="board-meta muted small">
+          {loading
+            ? 'Loading…'
+            : activeResumeId
+              ? `${sortedJobs.length} jobs · ranked by match to your active résumé`
+              : `${sortedJobs.length} jobs · pick a résumé (top-right) to see match scores`}
+        </div>
+
+        <div className="job-list">
+          {sortedJobs.map((job) => (
+            <JobCard key={job.id} job={job} score={scores[job.id]} onOpen={() => setSelectedJob(job)} />
+          ))}
+          {!loading && sortedJobs.length === 0 && (
+            <p className="muted">No jobs yet. Try a search above.</p>
+          )}
+        </div>
+      </main>
+
+      {selectedJob && (
+        <JobDetailDrawer
+          job={selectedJob}
+          activeResumeId={activeResumeId}
+          onClose={() => setSelectedJob(null)}
+        />
+      )}
+
+      {managerOpen && (
+        <ResumeManager
+          resumes={resumes}
+          activeResumeId={activeResumeId}
+          onClose={() => setManagerOpen(false)}
+          onChanged={onResumesChanged}
+          onSetActive={setActive}
+        />
+      )}
     </div>
   )
 }

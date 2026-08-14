@@ -33,6 +33,7 @@ export function Register() {
   }
 
   return (
+    <div className="auth-page">
     <div className="card">
       <h1>Create your account</h1>
       <form onSubmit={handleSubmit}>
@@ -62,6 +63,7 @@ export function Register() {
       <p className="muted">
         Already have an account? <Link to="/login">Log in</Link>
       </p>
+    </div>
     </div>
   )
 }

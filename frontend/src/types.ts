@@ -37,3 +37,15 @@ export interface JobMatch {
   sourceUrl: string | null
   score: number
 }
+
+export interface Job {
+  id: string
+  title: string
+  company: string | null
+  location: string | null
+  description: string
+  source: string
+  sourceUrl: string | null
+  postedAt: string | null
+  createdAt: string
+}

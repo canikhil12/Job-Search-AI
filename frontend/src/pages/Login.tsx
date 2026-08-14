@@ -33,6 +33,7 @@ export function Login() {
   }
 
   return (
+    <div className="auth-page">
     <div className="card">
       <h1>Log in</h1>
       <form onSubmit={handleSubmit}>
@@ -57,6 +58,7 @@ export function Login() {
       <p className="muted">
         No account yet? <Link to="/register">Register</Link>
       </p>
+    </div>
     </div>
   )
 }
