@@ -3,8 +3,15 @@ import Markdown from 'react-markdown'
 import { ApiRequestError } from '../api'
 import { streamAnalysis } from '../analysis/analysisApi'
 import { streamCoverLetter } from '../coverletter/coverLetterApi'
+import { streamTailor } from '../tailor/tailorApi'
 
-type Kind = 'analysis' | 'cover-letter'
+type Kind = 'analysis' | 'cover-letter' | 'tailor'
+
+const STREAMERS = {
+  analysis: streamAnalysis,
+  'cover-letter': streamCoverLetter,
+  tailor: streamTailor,
+}
 
 /** Streams an AI response (gap analysis or cover letter) and renders it as Markdown as it arrives. */
 export function AiStreamPanel({ resumeId, jobId, kind }: { resumeId: string; jobId: string; kind: Kind }) {
@@ -21,7 +28,7 @@ export function AiStreamPanel({ resumeId, jobId, kind }: { resumeId: string; job
     setError(null)
     setStreaming(true)
 
-    const stream = kind === 'analysis' ? streamAnalysis : streamCoverLetter
+    const stream = STREAMERS[kind]
     stream(
       resumeId,
       jobId,

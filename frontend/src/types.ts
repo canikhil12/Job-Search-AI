@@ -49,3 +49,10 @@ export interface Job {
   postedAt: string | null
   createdAt: string
 }
+
+export interface AtsResult {
+  score: number
+  matchedKeywords: string[]
+  missingKeywords: string[]
+  summary: string
+}

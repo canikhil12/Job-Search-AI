@@ -634,3 +634,45 @@ select {
   border-radius: 999px;
   padding: 0.05rem 0.4rem;
 }
+
+/* ATS score (drawer) */
+.ats {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  background: #0b1220;
+}
+.ats-head { display: flex; gap: 1rem; align-items: center; }
+.ats-gauge {
+  flex-shrink: 0;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--accent);
+  line-height: 1;
+}
+.ats-gauge strong { font-size: 1.4rem; font-variant-numeric: tabular-nums; }
+.ats-gauge span { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.ats-gauge.good { border-color: #4ade80; }
+.ats-gauge.good strong { color: #4ade80; }
+.ats-gauge.mid { border-color: #fbbf24; }
+.ats-gauge.mid strong { color: #fbbf24; }
+.ats-gauge.low { border-color: var(--error); }
+.ats-gauge.low strong { color: var(--error); }
+.ats-summary { min-width: 0; }
+.ats-summary p { margin: 0 0 0.4rem; font-size: 0.9rem; }
+
+.ats-keywords { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; }
+.kw {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+.kw.matched { color: #4ade80; border-color: #14532d; background: rgba(22,101,52,0.15); }
+.kw.missing { color: var(--error); border-color: #7f1d1d; background: rgba(127,29,29,0.15); }
+.kw.missing::before { content: '＋ '; }
