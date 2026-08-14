@@ -98,7 +98,7 @@ key reserved for Phases 5–6 (text generation).
 ## Phase 8 — Product build-out (live search, ATS, tailoring, interactive UI)
 _Expanded scope from user: search recent postings on the net → ATS score → tailor if low → apply._
 - [x] **Live job search (Adzuna)** backend: `job/search/` port + AdzunaJobSearchClient / FakeJobSearchClient, `POST /api/jobs/search` (recency via `max_days_old`), V4 migration (external_id + posted_at), dedupe by external id, embed+store. Tests: JobSearchIntegrationTest (2). Suite 41/41 green.
-- [ ] Set `JOB_SEARCH_PROVIDER=adzuna` + `ADZUNA_APP_ID`/`ADZUNA_APP_KEY` on Render; verify live search
+- [x] Set `JOB_SEARCH_PROVIDER=adzuna` + `ADZUNA_APP_ID`/`ADZUNA_APP_KEY` on Render; **live search verified** (real recent postings from Synchrony, Commure, L3Harris… embedded + match-scored)
 - [ ] **ATS score**: Claude structured scoring (0–100 + matched/missing keywords) per résumé↔job
 - [ ] **Tailor résumé**: Claude rewrites bullets/summary to close the gap when ATS is low
 - [ ] **Job status tracking** (saved / applied): table + endpoints
