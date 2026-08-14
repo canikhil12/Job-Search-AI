@@ -71,14 +71,14 @@ the modern `service_role`) in `SUPABASE_SERVICE_ROLE_KEY`, sent as both `Authori
 **Note:** embeddings run through OpenRouter (`openai/text-embedding-3-small`, 1536d). Anthropic/OpenRouter
 key reserved for Phases 5–6 (text generation).
 
-## Phase 4 — Semantic Match  ← _backend live-verified; frontend pending_
+## Phase 4 — Semantic Match  ✅ _complete + deployed_
 - [x] `JobVectorRepository.search` — pgvector cosine KNN (`<=>` + HNSW), score = 1 - distance
 - [x] `match/` feature package: MatchService + MatchController
 - [x] `POST /api/matches` (match pasted text) and `GET /api/resumes/{id}/matches` (stored résumé, ownership-scoped), JWT-protected
 - [x] Query text embedded on-demand through the same EmbeddingClient (OpenRouter in prod)
 - [x] Tests: MatchServiceTest (5), MatchIntegrationTest (3, verifies ranking order + limit + auth) — full suite 35/35 green
 - [x] Verify live: Java/Spring résumé ranks 3 backend jobs top, data-eng last (0.64 vs 0.50); a data-eng résumé inverts it (Cribl 0.50→0.72, #1) — genuinely semantic
-- [ ] Frontend: "Find matches" on the dashboard (ranked jobs + scores)
+- [x] Frontend: "Find matches" on the dashboard — ranked jobs, score bars, Apply links; live-verified in browser (backend_resume.pdf → 3 backend jobs top, Cribl last)
 
 ## Phase 5 — AI Gap Analysis (SSE)
 - [ ] Streaming (Server-Sent Events) gap analysis between a resume and a job
