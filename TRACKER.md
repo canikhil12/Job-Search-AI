@@ -102,7 +102,13 @@ _Expanded scope from user: search recent postings on the net → ATS score → t
 - [ ] **ATS score**: Claude structured scoring (0–100 + matched/missing keywords) per résumé↔job
 - [ ] **Tailor résumé**: Claude rewrites bullets/summary to close the gap when ATS is low
 - [ ] **Job status tracking** (saved / applied): table + endpoints
-- [ ] **Interactive UI redesign**: app shell + résumé selector; job board (search bar, recency, match/ATS scores, save/applied); job detail drawer (description, ATS breakdown, tailor, cover letter, Apply); tracker; Markdown rendering
+- [x] **Interactive UI redesign (core)** — live-verified in browser:
+  - app shell + navbar with active-résumé selector (drives match scores) + résumé manager modal
+  - job board: search bar (query/location/recency), job cards with match %, recency tag, Apply links, ranked by match
+  - job detail drawer: description + tabs (Gap analysis / Cover letter) streaming Claude → **Markdown-rendered** (react-markdown), copy + regenerate, prominent Apply
+- [ ] Job board: **ATS score** chip + **saved/applied** badges (needs those backend features)
+- [ ] **Tracker** view (saved & applied)
+- [ ] Verify live search end-to-end (once Adzuna key set)
 
 ## Phase 7 — Dashboard  (folded into Phase 8's interactive UI)
 - [ ] Unified UI: matches, gaps, cover letters, application tracking
