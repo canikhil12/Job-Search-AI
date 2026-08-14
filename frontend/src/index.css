@@ -420,6 +420,12 @@ select {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background:
+    radial-gradient(1000px 460px at 12% -6%, rgba(99, 102, 241, 0.14), transparent 55%),
+    radial-gradient(1000px 460px at 88% -2%, rgba(34, 211, 238, 0.10), transparent 55%),
+    linear-gradient(rgba(148, 163, 184, 0.028) 1px, transparent 1px) 0 0 / 44px 44px,
+    linear-gradient(90deg, rgba(148, 163, 184, 0.028) 1px, transparent 1px) 0 0 / 44px 44px,
+    var(--bg);
 }
 
 /* Navbar */
@@ -475,7 +481,7 @@ select {
 
 .board-meta { margin: 1rem 0 0.75rem; }
 
-.job-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.job-list { display: flex; flex-direction: column; gap: 0.6rem; }
 
 .job-card {
   display: flex;
@@ -484,12 +490,12 @@ select {
   gap: 1rem;
   width: 100%;
   text-align: left;
-  padding: 1rem 1.1rem;
-  background: var(--card);
+  padding: 0.85rem 1.1rem;
+  background: rgba(30, 41, 59, 0.55);
   border: 1px solid var(--border);
   border-radius: 12px;
   cursor: pointer;
-  transition: border-color 0.15s, transform 0.05s;
+  transition: border-color 0.15s, transform 0.05s, background 0.15s;
 }
 .job-card:hover { border-color: var(--accent); background: var(--card); }
 .job-card:active { transform: translateY(1px); }
@@ -727,12 +733,12 @@ select {
 .nav-name { font-size: 0.9rem; }
 
 .layout {
-  max-width: 1200px;
+  max-width: 1500px;
   margin: 0 auto;
-  padding: 1.5rem 1.25rem 3rem;
+  padding: 1.75rem 2rem 3rem;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
-  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 1.75rem;
   align-items: start;
 }
 .layout .board { max-width: none; margin: 0; padding: 0; }
@@ -769,7 +775,8 @@ select {
 .score-ring { display: block; }
 .ring-track { stroke: var(--border); }
 .ring-progress { stroke: #2dd4bf; transition: stroke-dashoffset 0.6s ease; }
-.ring-label { fill: var(--text); font-size: 1rem; font-weight: 700; }
+.ring-label { fill: var(--text); font-size: 0.82rem; font-weight: 700; }
+.ring-progress { stroke: url(#ringGradient); }
 
 /* Résumé sidebar */
 .resume-sidebar {
