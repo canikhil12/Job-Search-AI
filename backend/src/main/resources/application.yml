@@ -67,6 +67,14 @@ embedding:
 # Seed the jobs table with bundled real postings on first startup (no-op once populated).
 jobs:
   seed-on-startup: ${SEED_JOBS:true}
+  # Live job search. Default "fake" (canned, no key — local/tests); set to "adzuna" in prod.
+  search:
+    provider: ${JOB_SEARCH_PROVIDER:fake}
+  adzuna:
+    app-id: ${ADZUNA_APP_ID:}
+    app-key: ${ADZUNA_APP_KEY:}
+    country: ${ADZUNA_COUNTRY:us}
+    base-url: ${ADZUNA_BASE_URL:https://api.adzuna.com/v1/api}
 
 # Chat model for AI features (Phase 5 gap analysis, Phase 6 cover letters). Default "fake"
 # (canned stream, no key — local/tests); set to "anthropic" in prod (native Messages API).

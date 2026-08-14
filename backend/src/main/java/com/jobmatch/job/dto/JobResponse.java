@@ -13,6 +13,7 @@ public record JobResponse(
         String description,
         String source,
         String sourceUrl,
+        OffsetDateTime postedAt,
         OffsetDateTime createdAt
 ) {
     public static JobResponse from(Job job) {
@@ -24,6 +25,7 @@ public record JobResponse(
                 job.getDescription(),
                 job.getSource(),
                 job.getSourceUrl(),
+                job.getPostedAt(),
                 job.getCreatedAt());
     }
 }

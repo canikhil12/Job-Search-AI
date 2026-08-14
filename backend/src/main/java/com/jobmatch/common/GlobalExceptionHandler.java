@@ -2,6 +2,7 @@ package com.jobmatch.common;
 
 import com.jobmatch.chat.ChatException;
 import com.jobmatch.embedding.EmbeddingException;
+import com.jobmatch.job.search.JobSearchException;
 import com.jobmatch.resume.UnsupportedFileTypeException;
 import com.jobmatch.resume.parse.ResumeParseException;
 import com.jobmatch.resume.storage.StorageException;
@@ -88,6 +89,13 @@ public class GlobalExceptionHandler {
         // Upstream (chat model) failure on a non-streaming path — don't leak details.
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
                 .body(ApiError.of(HttpStatus.BAD_GATEWAY.value(), "AI service is temporarily unavailable"));
+    }
+
+    @ExceptionHandler(JobSearchException.class)
+    public ResponseEntity<ApiError> handleJobSearch(JobSearchException ex) {
+        // Upstream (job-search provider) failure — don't leak details.
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body(ApiError.of(HttpStatus.BAD_GATEWAY.value(), "Job search is temporarily unavailable"));
     }
 
     @ExceptionHandler(Exception.class)

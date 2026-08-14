@@ -90,10 +90,21 @@ key reserved for Phases 5–6 (text generation).
 - [x] Set `CHAT_PROVIDER=anthropic` + `ANTHROPIC_API_KEY` (+ `CHAT_MODEL=claude-haiku-4-5-20251001`) on Render
 - [x] Verify live: Claude streamed a real, specific gap analysis via SSE (21 frames, correctly flagged data-eng skills missing from a backend résumé)
 
-## Phase 6 — Cover Letters
-- [ ] AI-generated, job-tailored cover letters
+## Phase 6 — Cover Letters  ✅ _backend complete + deployed_
+- [x] `coverletter/` feature: SSE-streamed, job-tailored cover letter (`GET /api/resumes/{id}/jobs/{jobId}/cover-letter`)
+- [x] Extracted `SseChatStreamer` (shared by gap analysis + cover letter)
+- [ ] Frontend surface (comes with the interactive UI below)
 
-## Phase 7 — Dashboard
+## Phase 8 — Product build-out (live search, ATS, tailoring, interactive UI)
+_Expanded scope from user: search recent postings on the net → ATS score → tailor if low → apply._
+- [x] **Live job search (Adzuna)** backend: `job/search/` port + AdzunaJobSearchClient / FakeJobSearchClient, `POST /api/jobs/search` (recency via `max_days_old`), V4 migration (external_id + posted_at), dedupe by external id, embed+store. Tests: JobSearchIntegrationTest (2). Suite 41/41 green.
+- [ ] Set `JOB_SEARCH_PROVIDER=adzuna` + `ADZUNA_APP_ID`/`ADZUNA_APP_KEY` on Render; verify live search
+- [ ] **ATS score**: Claude structured scoring (0–100 + matched/missing keywords) per résumé↔job
+- [ ] **Tailor résumé**: Claude rewrites bullets/summary to close the gap when ATS is low
+- [ ] **Job status tracking** (saved / applied): table + endpoints
+- [ ] **Interactive UI redesign**: app shell + résumé selector; job board (search bar, recency, match/ATS scores, save/applied); job detail drawer (description, ATS breakdown, tailor, cover letter, Apply); tracker; Markdown rendering
+
+## Phase 7 — Dashboard  (folded into Phase 8's interactive UI)
 - [ ] Unified UI: matches, gaps, cover letters, application tracking
 
 ---

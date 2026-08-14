@@ -49,3 +49,12 @@ services:
         sync: false
       - key: CHAT_MODEL                # optional, default claude-sonnet-5
         sync: false
+      # --- Live job search (Adzuna) ---
+      - key: JOB_SEARCH_PROVIDER       # set to: adzuna
+        sync: false
+      - key: ADZUNA_APP_ID
+        sync: false
+      - key: ADZUNA_APP_KEY
+        sync: false
+      - key: ADZUNA_COUNTRY            # optional, default us
+        sync: false

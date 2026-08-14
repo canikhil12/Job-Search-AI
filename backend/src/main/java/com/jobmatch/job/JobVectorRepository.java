@@ -27,8 +27,9 @@ public class JobVectorRepository {
     public void insert(Job job, float[] embedding) {
         jdbc.update(
                 """
-                INSERT INTO jobs (id, title, company, location, description, source, source_url, embedding, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, CAST(? AS vector), ?)
+                INSERT INTO jobs (id, title, company, location, description, source, source_url,
+                                  external_id, posted_at, embedding, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CAST(? AS vector), ?)
                 """,
                 job.getId(),
                 job.getTitle(),
@@ -37,6 +38,8 @@ public class JobVectorRepository {
                 job.getDescription(),
                 job.getSource(),
                 job.getSourceUrl(),
+                job.getExternalId(),
+                job.getPostedAt() == null ? null : Timestamp.from(job.getPostedAt().toInstant()),
                 toVectorLiteral(embedding),
                 Timestamp.from(job.getCreatedAt().toInstant()));
     }

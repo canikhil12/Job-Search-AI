@@ -37,6 +37,14 @@ public class Job {
     @Column(name = "source_url")
     private String sourceUrl;
 
+    /** Provider posting id (e.g. Adzuna) for dedupe; null for manual/seed jobs. */
+    @Column(name = "external_id")
+    private String externalId;
+
+    /** When the posting went live at the provider; null for manual/seed jobs. */
+    @Column(name = "posted_at")
+    private OffsetDateTime postedAt;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
@@ -46,6 +54,12 @@ public class Job {
 
     public Job(UUID id, String title, String company, String location, String description,
                String source, String sourceUrl, OffsetDateTime createdAt) {
+        this(id, title, company, location, description, source, sourceUrl, null, null, createdAt);
+    }
+
+    public Job(UUID id, String title, String company, String location, String description,
+               String source, String sourceUrl, String externalId, OffsetDateTime postedAt,
+               OffsetDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.company = company;
@@ -53,6 +67,8 @@ public class Job {
         this.description = description;
         this.source = source;
         this.sourceUrl = sourceUrl;
+        this.externalId = externalId;
+        this.postedAt = postedAt;
         this.createdAt = createdAt;
     }
 
@@ -82,6 +98,14 @@ public class Job {
 
     public String getSourceUrl() {
         return sourceUrl;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public OffsetDateTime getPostedAt() {
+        return postedAt;
     }
 
     public OffsetDateTime getCreatedAt() {

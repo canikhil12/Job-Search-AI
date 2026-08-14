@@ -2,6 +2,7 @@ package com.jobmatch.job;
 
 import com.jobmatch.job.dto.CreateJobRequest;
 import com.jobmatch.job.dto.JobResponse;
+import com.jobmatch.job.dto.JobSearchRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +21,24 @@ import java.util.UUID;
 public class JobController {
 
     private final JobService jobService;
+    private final JobSearchService jobSearchService;
 
-    public JobController(JobService jobService) {
+    public JobController(JobService jobService, JobSearchService jobSearchService) {
         this.jobService = jobService;
+        this.jobSearchService = jobSearchService;
     }
 
     @PostMapping
     public ResponseEntity<JobResponse> create(@Valid @RequestBody CreateJobRequest request) {
         JobResponse response = jobService.ingest(request, "manual");
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    /** Live-search recent postings (via the configured provider), storing new ones. */
+    @PostMapping("/search")
+    public ResponseEntity<List<JobResponse>> search(@Valid @RequestBody JobSearchRequest request) {
+        return ResponseEntity.ok(jobSearchService.search(
+                request.query(), request.location(), request.maxDaysOld(), request.limit()));
     }
 
     @GetMapping
