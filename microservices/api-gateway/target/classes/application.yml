@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: "optional:configserver:${CONFIG_URI:http://localhost:8888}"
+  cloud:
+    gateway:
+      # CORS for the SPA (the gateway is the single browser-facing origin now).
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+            allowed-methods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
+            allowed-headers: [Authorization, Content-Type]
+      routes:
+        # More specific routes first. AI endpoints are nested under /api/resumes/*/jobs/*.
+        - id: ai-service
+          uri: lb://ai-service
+          predicates:
+            - Path=/api/resumes/*/jobs/*/analysis,/api/resumes/*/jobs/*/cover-letter,/api/resumes/*/jobs/*/tailor,/api/resumes/*/jobs/*/ats
+        - id: match
+          uri: lb://job-service
+          predicates:
+            - Path=/api/resumes/*/matches
+        - id: resume-service
+          uri: lb://resume-service
+          predicates:
+            - Path=/api/resumes/**
+        - id: job-service
+          uri: lb://job-service
+          predicates:
+            - Path=/api/jobs/**,/api/matches
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
