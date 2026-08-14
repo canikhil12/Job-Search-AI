@@ -108,7 +108,9 @@ _Expanded scope from user: search recent postings on the net → ATS score → t
   - job detail drawer: description + tabs (Gap analysis / Cover letter) streaming Claude → **Markdown-rendered** (react-markdown), copy + regenerate, prominent Apply
 - [x] **ATS score** — `ats/` (Claude structured JSON via ChatClient.complete): 0–100 score + matched/missing keywords + summary; drawer shows a colored gauge + keyword chips, auto-computed on open. **Live-verified** (Java Developer → 85, accurate keyword coverage).
 - [x] **Tailor résumé** — `tailor/` SSE stream; drawer "Tailor" tab streams Claude's job-targeted résumé rewrite (Markdown). **Live-verified.**
-- [ ] **Saved / Applied tracking**: table + endpoints + card buttons + Tracker view (last remaining piece)
+- [x] **Saved / Applied tracking** — `jobstatus/` (V5 job_status table, PUT/DELETE/GET endpoints); Save toggle + Applied on cards/drawer, All/Saved/Applied filter tabs with counts. **Live-verified.** 46/46 tests.
+
+**Phase 8 COMPLETE — full product live: search → match → ATS → gap/cover/tailor → save/apply.**
 
 ## Phase 7 — Dashboard  (folded into Phase 8's interactive UI)
 - [ ] Unified UI: matches, gaps, cover letters, application tracking
