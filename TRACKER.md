@@ -80,8 +80,15 @@ key reserved for Phases 5–6 (text generation).
 - [x] Verify live: Java/Spring résumé ranks 3 backend jobs top, data-eng last (0.64 vs 0.50); a data-eng résumé inverts it (Cribl 0.50→0.72, #1) — genuinely semantic
 - [x] Frontend: "Find matches" on the dashboard — ranked jobs, score bars, Apply links; live-verified in browser (backend_resume.pdf → 3 backend jobs top, Cribl last)
 
-## Phase 5 — AI Gap Analysis (SSE)
-- [ ] Streaming (Server-Sent Events) gap analysis between a resume and a job
+## Phase 5 — AI Gap Analysis (SSE)  ← _backend built, tests green; needs ANTHROPIC key + frontend_
+- [x] `chat/` capability: ChatClient port + AnthropicChatClient (native Messages API, java.net.http streaming) / FakeChatClient
+- [x] `analysis/` feature: AnalysisService (builds prompt, validates ownership → 404) + AnalysisController (SSE relay via SseEmitter on a TaskExecutor)
+- [x] `GET /api/resumes/{id}/jobs/{jobId}/analysis` streams tokens (JSON-encoded frames)
+- [x] Fixed Spring Security + async gotchas: JWT filter runs on async dispatch; no `produces` on the SSE endpoint (so errors render as JSON)
+- [x] Tests: FakeChatClientTest (1) + AnalysisIntegrationTest (3, SSE stream + 404 + 401) — full suite 39/39 green
+- [ ] Set `CHAT_PROVIDER=anthropic` + `ANTHROPIC_API_KEY` on Render
+- [ ] Frontend: streaming analysis panel (pick a matched job → watch Claude analyze the gap live)
+- [ ] Verify live: real streamed analysis from Claude
 
 ## Phase 6 — Cover Letters
 - [ ] AI-generated, job-tailored cover letters

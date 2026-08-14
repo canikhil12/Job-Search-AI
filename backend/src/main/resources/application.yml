@@ -68,6 +68,17 @@ embedding:
 jobs:
   seed-on-startup: ${SEED_JOBS:true}
 
+# Chat model for AI features (Phase 5 gap analysis, Phase 6 cover letters). Default "fake"
+# (canned stream, no key — local/tests); set to "anthropic" in prod (native Messages API).
+chat:
+  provider: ${CHAT_PROVIDER:fake}
+  anthropic:
+    api-key: ${ANTHROPIC_API_KEY:}
+    base-url: ${ANTHROPIC_BASE_URL:https://api.anthropic.com}
+    model: ${CHAT_MODEL:claude-sonnet-5}
+    version: ${ANTHROPIC_VERSION:2023-06-01}
+    max-tokens: ${CHAT_MAX_TOKENS:1024}
+
 # Expose actuator health only (keep-warm ping target on Render later).
 management:
   endpoints:

@@ -47,6 +47,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    // Also run on ASYNC dispatches (e.g. SSE stream completion). Otherwise the SecurityContext is
+    // empty on the async re-dispatch while Spring Security's AuthorizationFilter still runs there,
+    // which would reject the request with AccessDenied and abort the stream.
+    @Override
+    protected boolean shouldNotFilterAsyncDispatch() {
+        return false;
+    }
+
     private void authenticate(String token, HttpServletRequest request) {
         try {
             UUID userId = UUID.fromString(jwtService.extractSubject(token));

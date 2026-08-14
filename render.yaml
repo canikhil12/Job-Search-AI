@@ -42,3 +42,10 @@ services:
         sync: false
       - key: EMBEDDING_MODEL           # OpenAI: text-embedding-3-small  | OpenRouter: openai/text-embedding-3-small
         sync: false
+      # --- Phase 5+: chat model for AI features (Anthropic Messages API) ---
+      - key: CHAT_PROVIDER             # set to: anthropic
+        sync: false
+      - key: ANTHROPIC_API_KEY         # Anthropic API key (sk-ant-...)
+        sync: false
+      - key: CHAT_MODEL                # optional, default claude-sonnet-5
+        sync: false

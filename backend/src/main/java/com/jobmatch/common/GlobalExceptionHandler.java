@@ -1,5 +1,6 @@
 package com.jobmatch.common;
 
+import com.jobmatch.chat.ChatException;
 import com.jobmatch.embedding.EmbeddingException;
 import com.jobmatch.resume.UnsupportedFileTypeException;
 import com.jobmatch.resume.parse.ResumeParseException;
@@ -80,6 +81,13 @@ public class GlobalExceptionHandler {
         // Upstream (embeddings provider) failure — don't leak details.
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
                 .body(ApiError.of(HttpStatus.BAD_GATEWAY.value(), "Embedding service is temporarily unavailable"));
+    }
+
+    @ExceptionHandler(ChatException.class)
+    public ResponseEntity<ApiError> handleChat(ChatException ex) {
+        // Upstream (chat model) failure on a non-streaming path — don't leak details.
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body(ApiError.of(HttpStatus.BAD_GATEWAY.value(), "AI service is temporarily unavailable"));
     }
 
     @ExceptionHandler(Exception.class)
