@@ -880,3 +880,38 @@ button:active:not(:disabled), .chip:active, .pill-btn:active { transform: scale(
 .toast.success { border-left-color: #4ade80; }
 .toast.error { border-left-color: var(--error); }
 @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
+
+/* ===== Multi-page nav + pages ===== */
+.nav-links { display: flex; gap: 0.25rem; }
+.nav-links a {
+  color: var(--muted); text-decoration: none; padding: 0.4rem 0.85rem;
+  border-radius: 8px; font-weight: 600; font-size: 0.9rem; transition: background 0.15s, color 0.15s;
+}
+.nav-links a:hover { color: var(--text); background: rgba(30, 41, 59, 0.6); }
+.nav-links a.active { color: #fff; background: rgba(99, 102, 241, 0.2); }
+.nav-resume { max-width: 190px; }
+
+.page { max-width: 1200px; margin: 0 auto; padding: 1.75rem 2rem 3rem; }
+.page.narrow { max-width: 660px; }
+.page-title { margin: 0 0 0.2rem; font-size: 1.6rem; }
+.page > .muted { margin: 0 0 0.5rem; }
+.page .resume-sidebar { position: static; margin-top: 1rem; }
+
+.tracker-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+@media (max-width: 800px) { .tracker-cols { grid-template-columns: 1fr; } }
+.tracker-col { min-width: 0; }
+
+/* Animated ATS ring */
+.ats-ring { flex-shrink: 0; }
+.ats-ring.good .ats-ring-progress { stroke: #4ade80; }
+.ats-ring.mid .ats-ring-progress { stroke: #fbbf24; }
+.ats-ring.low .ats-ring-progress { stroke: var(--error); }
+.ats-ring-num { fill: var(--text); font-size: 1.15rem; font-weight: 800; }
+.ats-ring.good .ats-ring-num { fill: #4ade80; }
+.ats-ring.mid .ats-ring-num { fill: #fbbf24; }
+.ats-ring.low .ats-ring-num { fill: var(--error); }
+.ats-ring-cap { fill: var(--muted); font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* Keyword chip entrance */
+.kw { animation: chipIn 0.3s ease both; }
+@keyframes chipIn { from { opacity: 0; transform: translateY(4px) scale(0.9); } to { opacity: 1; transform: none; } }

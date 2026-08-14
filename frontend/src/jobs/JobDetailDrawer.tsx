@@ -2,15 +2,10 @@ import { useEffect, useState } from 'react'
 import type { AtsResult, Job } from '../types'
 import { AiStreamPanel } from '../ai/AiStreamPanel'
 import { getAts } from '../ats/atsApi'
+import { AtsGauge } from '../ats/AtsGauge'
 import type { JobStatusValue } from '../jobstatus/jobStatusApi'
 
 type Tab = 'overview' | 'analysis' | 'cover-letter' | 'tailor'
-
-function atsLevel(score: number): string {
-  if (score >= 75) return 'good'
-  if (score >= 50) return 'mid'
-  return 'low'
-}
 
 export function JobDetailDrawer({
   job,
@@ -98,10 +93,7 @@ export function JobDetailDrawer({
             ) : ats ? (
               <>
                 <div className="ats-head">
-                  <div className={`ats-gauge ${atsLevel(ats.score)}`}>
-                    <strong>{ats.score}</strong>
-                    <span>ATS</span>
-                  </div>
+                  <AtsGauge score={ats.score} />
                   <div className="ats-summary">
                     <p>{ats.summary}</p>
                     {ats.score < 75 && (
@@ -113,13 +105,17 @@ export function JobDetailDrawer({
                 </div>
                 {(ats.matchedKeywords.length > 0 || ats.missingKeywords.length > 0) && (
                   <div className="ats-keywords">
-                    {ats.matchedKeywords.map((k) => (
-                      <span key={`m-${k}`} className="kw matched">
+                    {ats.matchedKeywords.map((k, i) => (
+                      <span key={`m-${k}`} className="kw matched" style={{ animationDelay: `${i * 35}ms` }}>
                         {k}
                       </span>
                     ))}
-                    {ats.missingKeywords.map((k) => (
-                      <span key={`x-${k}`} className="kw missing">
+                    {ats.missingKeywords.map((k, i) => (
+                      <span
+                        key={`x-${k}`}
+                        className="kw missing"
+                        style={{ animationDelay: `${(ats.matchedKeywords.length + i) * 35}ms` }}
+                      >
                         {k}
                       </span>
                     ))}
