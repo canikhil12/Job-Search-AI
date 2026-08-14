@@ -106,9 +106,9 @@ _Expanded scope from user: search recent postings on the net → ATS score → t
   - app shell + navbar with active-résumé selector (drives match scores) + résumé manager modal
   - job board: search bar (query/location/recency), job cards with match %, recency tag, Apply links, ranked by match
   - job detail drawer: description + tabs (Gap analysis / Cover letter) streaming Claude → **Markdown-rendered** (react-markdown), copy + regenerate, prominent Apply
-- [ ] Job board: **ATS score** chip + **saved/applied** badges (needs those backend features)
-- [ ] **Tracker** view (saved & applied)
-- [ ] Verify live search end-to-end (once Adzuna key set)
+- [x] **ATS score** — `ats/` (Claude structured JSON via ChatClient.complete): 0–100 score + matched/missing keywords + summary; drawer shows a colored gauge + keyword chips, auto-computed on open. **Live-verified** (Java Developer → 85, accurate keyword coverage).
+- [x] **Tailor résumé** — `tailor/` SSE stream; drawer "Tailor" tab streams Claude's job-targeted résumé rewrite (Markdown). **Live-verified.**
+- [ ] **Saved / Applied tracking**: table + endpoints + card buttons + Tracker view (last remaining piece)
 
 ## Phase 7 — Dashboard  (folded into Phase 8's interactive UI)
 - [ ] Unified UI: matches, gaps, cover letters, application tracking
